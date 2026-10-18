@@ -973,5 +973,56 @@ function loop(){
 }
 loop();
 </script>
+  <style>
+  #fs-btn {
+    position: fixed;
+    top: 18px;
+    right: 22px;
+    z-index: 50;
+    padding: 8px 14px;
+    border-radius: 99px;
+    border: 1px solid #22d3ee88;
+    background: #02030fcc;
+    color: #22d3ee;
+    font: 600 12px "Plus Jakarta Sans", sans-serif;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px -3px #22d3ee;
+    transition: 0.2s;
+  }
+  #fs-btn:hover {
+    background: #22d3ee;
+    color: #02030f;
+  }
+  /* Geser indikator stasiun agar tidak bertumpuk dengan tombol Fullscreen */
+  #vs { top: 60px !important; }
+</style>
+
+<button id="fs-btn" onclick="toggleFS()" title="Tekan F untuk Layar Penuh">⛶ Fullscreen</button>
+
+<script>
+  function toggleFS() {
+    const el = document.documentElement;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+
+  document.addEventListener("fullscreenchange", () => {
+    document.getElementById("fs-btn").textContent = 
+      document.fullscreenElement ? "✕ Keluar Fullscreen" : "⛶ Fullscreen";
+  });
+
+  // Pintasan keyboard huruf F untuk masuk/keluar Fullscreen
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "KeyF" && !/INPUT|SELECT/.test(e.target.tagName)) {
+      toggleFS();
+    }
+  });
+</script>
 </body>
 </html>
