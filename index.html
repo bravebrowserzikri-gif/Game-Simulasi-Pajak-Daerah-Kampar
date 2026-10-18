@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Kota Pajak Daerah Kampar 3D - Bapenda Kabupaten Kampar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#22d3ee}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:#02030f;color:#e8f4ff;font-family:"Plus Jakarta Sans",system-ui,sans-serif;touch-action:none;user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#top{position:fixed;top:0;left:0;right:0;padding:18px 22px 36px;pointer-events:none;background:linear-gradient(#02030fe6,#02030f00);z-index:10}
+h1{font:800 clamp(17px,3.4vw,32px)/1.1 Orbitron,sans-serif;letter-spacing:.02em;background:linear-gradient(90deg,#22d3ee,#e879f9 60%,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent}
+#top p{font-size:12.5px;opacity:.75;margin-top:6px;max-width:52ch}
+#vs{position:fixed;top:18px;right:22px;text-align:right;font-size:12px;font-weight:600;pointer-events:none;z-index:10}
+#vs i{display:block;height:4px;margin-top:6px;border-radius:4px;background:#ffffff1f;overflow:hidden}
+#bar{display:block;height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#fbbf24);box-shadow:0 0 10px #22d3ee;transition:width .5s}
+#hint{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);padding:9px 16px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap;background:#050b1ecc;border:1px solid #22d3ee55;backdrop-filter:blur(10px);transition:opacity .4s;pointer-events:none;z-index:10}
+.lb{position:fixed;left:0;top:0;transform:translateX(-50%);font-size:11.5px;font-weight:600;padding:4px 10px 4px 8px;border-radius:99px;background:#02030fb3;border:1px solid var(--c);color:#fff;white-space:nowrap;pointer-events:none;box-shadow:0 0 12px -2px var(--c);z-index:5}
+.lb::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+#panel{position:fixed;right:22px;top:50%;width:min(410px,calc(100% - 44px));max-height:78vh;overflow:auto;padding:22px;background:linear-gradient(160deg,#0b1a3aee,#050b1eee);border:1px solid #22d3ee44;backdrop-filter:blur(16px);box-shadow:0 0 40px -10px var(--ac);clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));opacity:0;transform:translate(30px,-50%);pointer-events:none;transition:opacity .35s,transform .35s;z-index:20}
+#panel.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+#panel::before{content:"";position:absolute;left:0;top:20px;width:3px;height:44px;background:var(--ac);box-shadow:0 0 14px var(--ac)}
+#pt{font:800 20px/1.2 Orbitron,sans-serif;color:var(--ac)}
+#ps{font-size:12.5px;opacity:.7;margin:5px 0 12px}
+#pd{font-size:13.5px;line-height:1.6}
+#po{list-style:none;margin-top:12px;padding:0;display:grid;gap:8px;font-size:13px;line-height:1.5}
+#po li{position:relative;padding-left:18px}
+#po li::before{content:"";position:absolute;left:1px;top:.55em;width:7px;height:7px;background:var(--ac);transform:rotate(45deg)}
+#ch{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+#ch:empty{display:none}
+.chip{font:inherit;font-size:12px;font-weight:600;padding:7px 12px;border:1px solid #ffffff33;background:#ffffff0f;color:inherit;cursor:pointer;border-radius:8px;transition:.2s}
+.chip:hover{background:#ffffff22}
+.chip.on{background:var(--ac);color:#02121a;border-color:transparent}
+small{display:block;margin-top:14px;font-size:11px;opacity:.55;line-height:1.45}
+#map{position:fixed;left:18px;bottom:18px;width:140px;height:140px;border-radius:50%;background:#02030fb3;border:1px solid #22d3ee55;box-shadow:0 0 20px -6px #22d3ee;z-index:10}
+#gauge{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);text-align:center;pointer-events:none;z-index:10}
+#spd{font:800 38px/1 Orbitron,sans-serif;color:#22d3ee;text-shadow:0 0 16px #22d3ee}
+#gauge span{display:block;font-size:11px;opacity:.6;margin-top:2px}
+#toast{position:fixed;left:50%;top:22%;transform:translate(-50%,-20px);padding:14px 22px;max-width:86%;text-align:center;font-weight:600;background:#0b1a3af0;border:1px solid #fbbf24;box-shadow:0 0 30px #fbbf2455;opacity:0;pointer-events:none;transition:.5s;z-index:30}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#pad{display:none;position:fixed;left:0;right:0;bottom:14px;padding:0 14px;justify-content:space-between;pointer-events:none;z-index:25}
+#pad div{display:flex;gap:10px;align-items:flex-end}
+#pad button{pointer-events:auto;width:62px;height:62px;border-radius:50%;border:1px solid #22d3ee88;background:#0b1a3a99;color:#e8f4ff;font-size:22px;touch-action:none}
+@media(pointer:coarse){#pad{display:flex}#map{left:auto;right:14px;top:56px;bottom:auto;width:96px;height:96px}#gauge{bottom:92px}#hint{bottom:150px}}
+@media(max-width:900px){#panel{top:74px;right:12px;left:12px;width:auto;max-height:42vh;padding:16px;transform:translateY(-20px)}#panel.on{transform:none}#vs{display:none}}
+.calc{margin-top:16px;padding-top:14px;border-top:1px solid #ffffff22}
+.calc h4{font:600 13px Orbitron,sans-serif;color:var(--ac);margin-bottom:10px}
+.calc label{display:block;font-size:12px;margin-bottom:9px}
+.calc input,.calc select{display:block;width:100%;margin-top:4px;padding:8px 10px;background:#ffffff12;border:1px solid #ffffff33;border-radius:8px;color:#e8f4ff;font:inherit;font-size:13px}
+.calc select option{color:#000}
+#cr div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px dashed #ffffff1f}
+#cr .tot{font-size:14px;color:var(--ac);border:0;padding-top:10px}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid var(--ac);background:#ffffff0a;color:var(--ac);text-decoration:none;font:inherit;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--ac);color:#02121a}
+.btn.pdf-btn{border-color:#fbbf24;color:#fbbf24;background:#fbbf2415}
+.btn.pdf-btn:hover{background:#fbbf24;color:#02121a}
+.tb{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}
+.tb th,.tb td{padding:6px 4px;text-align:right;border-bottom:1px solid #ffffff14}.tb th:first-child,.tb td:first-child{text-align:left}
+.tb .sec td{color:var(--ac);font-weight:700;text-align:left;padding-top:10px;border-bottom:1px solid var(--ac)}
+
+/* PDF MODAL VIEWER */
+#pdf-modal{position:fixed;inset:0;background:rgba(2,3,15,.86);backdrop-filter:blur(16px);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
+#pdf-modal.on{display:flex}
+.pdf-box{width:min(960px,100%);height:min(88vh,860px);background:#071026;border:1px solid #22d3ee66;box-shadow:0 0 50px -10px #22d3ee88;border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.pdf-head{padding:14px 20px;background:#040917;border-bottom:1px solid #ffffff1a;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.pdf-title{font:700 15px Orbitron,sans-serif;color:#fbbf24;display:flex;align-items:center;gap:8px}
+.pdf-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pdf-tab{font:inherit;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;border:1px solid #ffffff26;background:#ffffff0d;color:#e8f4ff;cursor:pointer}
+.pdf-tab.on{background:#22d3ee;color:#021019;border-color:transparent}
+.pdf-close{font:700 14px sans-serif;width:34px;height:34px;border-radius:8px;border:1px solid #ffffff26;background:#ffffff12;color:#fff;cursor:pointer}
+.pdf-close:hover{background:#ef4444;border-color:#ef4444}
+.pdf-body{flex:1;overflow:auto;position:relative;background:#0b1528;user-select:text}
+.pdf-paper{max-width:780px;margin:24px auto;padding:38px 44px;background:#fcfaf2;color:#111827;border-radius:8px;box-shadow:0 12px 36px rgba(0,0,0,.6);font-family:"Times New Roman",Georgia,serif;line-height:1.65;font-size:14.5px}
+.pdf-paper h2,.pdf-paper h3,.pdf-paper h4{text-align:center;font-family:"Plus Jakarta Sans",sans-serif;margin:4px 0;color:#0f172a}
+.pdf-paper .garuda{width:62px;height:62px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#b45309);color:#fff;font:800 22px Orbitron,sans-serif;box-shadow:0 4px 12px rgba(180,83,9,.3)}
+.pdf-paper .meta-bar{text-align:center;font-size:12px;font-family:"Plus Jakarta Sans",sans-serif;color:#475569;border-bottom:2px double #0f172a;padding-bottom:14px;margin-bottom:18px}
+.pdf-paper .pasal{font-weight:700;text-align:center;margin:18px 0 6px;font-family:"Plus Jakarta Sans",sans-serif}
+.pdf-paper table{width:100%;border-collapse:collapse;margin:14px 0;font-family:"Plus Jakarta Sans",sans-serif;font-size:12.5px}
+.pdf-paper th,.pdf-paper td{border:1px solid #94a3b8;padding:7px 9px;text-align:left}
+.pdf-paper th{background:#e2e8f0;font-weight:700}
+.pdf-paper .ttd{margin-top:28px;display:flex;justify-content:flex-end;font-family:"Plus Jakarta Sans",sans-serif;font-size:12.5px;text-align:left}
+.pdf-iframe-wrap{width:100%;height:100%;display:flex;flex-direction:column}
+.pdf-iframe-bar{padding:10px 16px;background:#050b18;border-bottom:1px solid #ffffff1a;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+.pdf-iframe-bar input[type="file"]{font-size:11.5px;color:#94a3b8}
+#pdf-frame{width:100%;flex:1;border:0;background:#1e293b}
+#panel::-webkit-scrollbar,.pdf-body::-webkit-scrollbar{width:6px}
+#panel::-webkit-scrollbar-thumb,.pdf-body::-webkit-scrollbar-thumb{background:#22d3ee66;border-radius:4px}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="top">
+  <h1>Kota Pajak Daerah Kampar</h1>
+  <p>Kendarai mobil ke stasiun bercahaya untuk mengenal tiap pajak daerah, menghitung simulasi pajak, membuka PDF Perbup, dan ke Menara PAD di tengah untuk melihat realisasi PAD.</p>
+</div>
+<div id="vs"><span id="vis">Stasiun dikunjungi 0/8</span><i><b id="bar"></b></i></div>
+<div id="hint">Panah / W A S D untuk berkendara &middot; Shift untuk turbo &middot; P untuk buka PDF Peraturan</div>
+
+<div id="panel">
+  <div id="pt"></div>
+  <div id="ps"></div>
+  <p id="pd"></p>
+  <ul id="po"></ul>
+  <div id="ch"></div>
+  <div id="ex"></div>
+  <div id="calc"></div>
+  <small>Sumber: Perda Kab. Kampar No. 9/2023, Perbup Kampar (PBB-P2 4/2025, BPHTB 1/2025, MBLB 2/2025, Reklame 3/2025, PBJT 5/2025, Air Tanah 38/2024 &amp; 51/2025, Sarang Walet 39/2024), PMK 85/2024, dan UU 1/2022 (HKPD).</small>
+</div>
+
+<!-- MODAL PENAMPIL PDF PERATURAN PAJAK DAERAH -->
+<div id="pdf-modal">
+  <div class="pdf-box">
+    <div class="pdf-head">
+      <div class="pdf-title">&#128196; <span id="pdf-modal-title">Dokumen Peraturan Pajak Daerah</span></div>
+      <div class="pdf-controls">
+        <div id="pdf-doc-switch" style="display:flex;gap:6px"></div>
+        <button class="pdf-tab on" id="tab-mode-salinan" onclick="setPdfMode('salinan')">Salinan Resmi &amp; Lampiran</button>
+        <button class="pdf-tab" id="tab-mode-embed" onclick="setPdfMode('embed')">File PDF Asli (Embed)</button>
+        <button class="pdf-close" onclick="closePdfModal()" title="Tutup (Esc)">&#10005;</button>
+      </div>
+    </div>
+    <div class="pdf-body" id="pdf-body-salinan"></div>
+    <div class="pdf-body" id="pdf-body-embed" style="display:none">
+      <div class="pdf-iframe-wrap">
+        <div class="pdf-iframe-bar">
+          <span>File target: <b id="pdf-file-label" style="color:#22d3ee"></b> (atau pilih file PDF dari perangkat Anda):</span>
+          <input type="file" id="pdf-local-input" accept="application/pdf" onchange="loadLocalPdf(event)">
+        </div>
+        <iframe id="pdf-frame" title="PDF Peraturan Pajak Daerah"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="map" width="140" height="140"></canvas>
+<div id="gauge"><b id="spd">0</b><span>km/jam</span></div>
+<div id="toast"></div>
+<div id="pad">
+  <div><button data-k="ArrowLeft">&#9664;</button><button data-k="ArrowRight">&#9654;</button></div>
+  <div><button data-k="ShiftLeft">&#9889;</button><button data-k="ArrowDown">&#9660;</button><button data-k="ArrowUp">&#9650;</button></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,$=id=>document.getElementById(id),TAU=Math.PI*2,hx=c=>"#"+c.toString(16).padStart(6,"0");
+const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.45,metalness:.3},o));
+const mesh=(g,m,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);return o};
+const cvs=(w,h,f)=>{const k=document.createElement("canvas");k.width=w;k.height=h;f(k.getContext("2d"),w,h);return k};
+const grad=(q,h,s)=>{const g=q.createLinearGradient(0,0,0,h);s.forEach(([o,c])=>g.addColorStop(o,c));return g};
+const B=(a,b)=>"<b>"+a+":</b> "+b,rp=n=>"Rp"+Math.round(n).toLocaleString("id-ID");
+
+/* =========================================================================
+   DATABASE DOKUMEN PDF PERBUP & PMK (SALINAN RESMI + KONFIGURASI FILE PDF)
+   ========================================================================= */
+const PDF_DOCS = {
+  pbb: [
+    {
+      title: "Perbup Kampar No. 4 Tahun 2025 (PBB-P2)",
+      file: "a053d5ae0ad6b8eb896b3aa643519b67 (1).pdf",
+      nomor: "NOMOR 4 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 4",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK BUMI DAN BANGUNAN PERDESAAN DAN PERKOTAAN",
+      tanggal: "6 Januari 2025",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB I &mdash; KETENTUAN UMUM (Pasal 1)</div>
+        <p><b>Pajak Bumi dan Bangunan Perdesaan dan Perkotaan (PBB-P2)</b> adalah Pajak atas bumi dan/atau bangunan yang dimiliki, dikuasai, dan/atau dimanfaatkan oleh orang pribadi atau Badan. <b>Nilai Jual Objek Pajak (NJOP)</b> adalah harga rata-rata yang diperoleh dari transaksi jual beli yang terjadi secara wajar.</p>
+        <div class="pasal">BAB II &mdash; PENDAFTARAN, PENDATAAN, PENILAIAN &amp; PENETAPAN (Pasal 2 &ndash; Pasal 17)</div>
+        <p>Pendaftaran objek pajak dituangkan dalam formulir <b>SPOP/e-SPOP</b> dan <b>LSPOP/e-LSPOP</b> dan dikembalikan paling lambat 7 hari kerja. Penilaian NJOP dilakukan melalui Penilaian Massal (CAV/CAMA berdasarkan NIR dalam Zona Nilai Tanah / ZNT dan DBKB) atau Penilaian Individual.</p>
+        <p><b>Pasal 14 &amp; Pasal 15:</b></p>
+        <ul>
+          <li>Dasar pengenaan PBB-P2 adalah NJOP.</li>
+          <li>Besarnya <b>NJOP Tidak Kena Pajak (NJOPTKP)</b> ditetapkan sebesar <b>Rp10.000.000,00 (sepuluh juta rupiah)</b> untuk setiap Wajib Pajak (diberikan atas salah satu objek PBB-P2 untuk setiap Tahun Pajak).</li>
+          <li>NJOP yang digunakan sebagai dasar pengenaan (NJKP) ditetapkan paling rendah 20% dan paling tinggi 100% dari NJOP setelah dikurangi NJOPTKP.</li>
+        </ul>
+        <div class="pasal">BAB III &amp; IV &mdash; PEMBAYARAN, PENGURANGAN &amp; KERINGANAN (Pasal 18 &ndash; Pasal 30)</div>
+        <p>Jangka waktu pembayaran SPPT paling lama 6 (enam) bulan sejak tanggal pengiriman SPPT. Keterlambatan dikenai sanksi administratif bunga <b>1% per bulan</b> (maksimal 24 bulan). Pengurangan PBB-P2 dapat diberikan sebesar 100% bagi Veteran/Pejuang, dan 50% bagi Pensiunan ASN/TNI/POLRI, masyarakat berpenghasilan rendah, sekolah/perguruan tinggi swasta, serta RS swasta.</p>
+        <div class="pasal">LAMPIRAN &mdash; KLASIFIKASI NILAI JUAL KENA PAJAK (NJKP) &amp; TARIF PBB-P2</div>
+        <table>
+          <tr><th>No</th><th>Klasifikasi NJOP</th><th>Klasifikasi NJKP</th><th>Tarif PBB-P2</th></tr>
+          <tr><td>1</td><td>Di bawah (&lt;) Rp 1 Miliar</td><td>75%</td><td>0,1%</td></tr>
+          <tr><td>2</td><td>Rp 1 Miliar s/d (&le;) Rp 2 Miliar</td><td>75%</td><td>0,2%</td></tr>
+          <tr><td>3</td><td>Di atas (&gt;) Rp 2 Miliar</td><td>90%</td><td>0,3%</td></tr>
+        </table>
+        <p><b>Contoh Perhitungan Resmi (Lampiran Perbup 4/2025):</b><br>
+        &bull; <b>NJOP &lt; 1 Miliar:</b> Luas Tanah 20.000 m&sup2; &times; Rp14.000/m&sup2; &times; 75% &times; 0,1% = <b>Rp210.000</b>.<br>
+        &bull; <b>NJOP 1 &ndash; 2 Miliar:</b> Luas Tanah 40.000 m&sup2; &times; Rp27.000/m&sup2; &times; 75% &times; 0,2% = <b>Rp1.620.000</b>.<br>
+        &bull; <b>NJOP &gt; 2 Miliar (Tanah + Bangunan):</b> Tanah 5.000 m&sup2; &times; Rp464.000 (Rp2.320.000.000) + Bangunan 36 m&sup2; &times; Rp823.000 (Rp29.628.000) = Total NJOP Rp2.349.628.000 &times; 90% &times; 0,3% = <b>Rp6.343.995,6</b>.</p>
+      `
+    },
+    {
+      title: "PMK Nomor 85 Tahun 2024 (Penilaian PBB-P2)",
+      file: "7aadbe6edee08e8e7c17f01dcfdbaa21.pdf",
+      nomor: "PMK NOMOR 85 TAHUN 2024",
+      berita: "BERITA NEGARA REPUBLIK INDONESIA TAHUN 2024 NOMOR 881",
+      tentang: "PENILAIAN PAJAK BUMI DAN BANGUNAN PERDESAAN DAN PERKOTAAN",
+      tanggal: "25 Oktober 2024",
+      pejabat: "MENTERI KEUANGAN RI — SRI MULYANI INDRAWATI",
+      isi: `
+        <div class="pasal">OBJEK &amp; METODE PENILAIAN PBB-P2 (Pasal 2 &ndash; Pasal 9)</div>
+        <p>Objek PBB-P2 dibedakan menjadi <b>Objek Pajak Umum</b> (Standar: Tanah &le; 10.000 m&sup2;, Lantai &le; 4, Luas Bangunan &le; 1.000 m&sup2;; dan Nonstandar) serta <b>Objek Pajak Khusus</b> (jalan tol, bandar udara, bendungan, pelabuhan, lapangan golf, pabrik semen/pupuk, kilang/pipa migas, SPBU, menara).</p>
+        <p>Tiga metode penilaian PBB-P2 meliputi: (1) <b>Perbandingan Harga dengan Objek Lain yang Sejenis</b> (membentuk NIR pada setiap ZNT untuk tanah), (2) <b>Nilai Perolehan Baru</b> (menyusun DBKB dikurangi penyusutan fisik bangunan untuk 16 klasifikasi JPB), dan (3) <b>Nilai Jual Pengganti</b> (kapitalisasi pendapatan bersih tahunan untuk objek komersial).</p>
+      `
+    }
+  ],
+  bphtb: [
+    {
+      title: "Perbup Kampar No. 1 Tahun 2025 (BPHTB)",
+      file: "422565ba49222951dffe7937555a4f28.pdf",
+      nomor: "NOMOR 1 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 1",
+      tentang: "TATA CARA PEMUNGUTAN BEA PEROLEHAN HAK ATAS TANAH DAN BANGUNAN",
+      tanggal: "6 Januari 2025",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB I &amp; II &mdash; KETENTUAN UMUM, PENDAFTARAN &amp; PEMBAYARAN (Pasal 1 &ndash; Pasal 9)</div>
+        <p><b>BPHTB</b> adalah pajak atas perolehan hak atas tanah dan/atau bangunan. Wajib Pajak mengajukan pendaftaran secara manual atau online (meliputi hibah, warisan, jual beli, peningkatan hak, atau lelang) dan menyetorkan pajak dengan <b>SSPD-BPHTB</b> melalui sistem pembayaran elektronik (CMS).</p>
+        <p><b>Pasal 4:</b> PPAT/Notaris hanya dapat menandatangani akta pemindahan hak setelah Wajib Pajak menyerahkan bukti pembayaran BPHTB, serta wajib melaporkan pembuatan akta paling lambat tanggal 10 bulan berikutnya (sanksi pelanggaran Rp10.000.000 per pelanggaran akta dan Rp1.000.000 per keterlambatan laporan).</p>
+        <p><b>Pasal 8 &amp; Pasal 9:</b> Penelitian SSPD-BPHTB dilakukan paling lama 1 hari kerja. Kode Billing BPHTB berlaku 30 hari kalender sejak verifikasi. Pengurangan 100% diberikan bagi Wajib Pajak yang mendapat ganti rugi Proyek Strategis Nasional/Pemerintah dan tanah/bangunan untuk kepentingan sosial (panti asuhan, panti jompo, rumah yatim piatu).</p>
+        <div class="pasal">LAMPIRAN I &mdash; CONTOH PERHITUNGAN BESARAN PENGENAAN BPHTB (TARIF 5%)</div>
+        <table>
+          <tr><th>Jenis Perolehan Hak</th><th>NPOPTKP</th><th>Rumus Pajak Terutang</th></tr>
+          <tr><td>Jual Beli / Pemisahan Hak / Risalah Lelang</td><td>Rp 80.000.000</td><td>5% &times; (NPOP &minus; Rp 80.000.000)</td></tr>
+          <tr><td>Waris / Hibah Wasiat Orang Tua Kandung (Lurus 1 Derajat)</td><td>Rp 300.000.000</td><td>5% &times; (NPOP &minus; Rp 300.000.000)</td></tr>
+          <tr><td>Hibah Wasiat Bukan dari Orang Tua Kandung</td><td>Rp 350.000.000</td><td>5% &times; (NPOP &minus; Rp 350.000.000)</td></tr>
+          <tr><td>Waris Cucu (Bukan Lurus 1 Derajat)</td><td>Rp 80.000.000</td><td>5% &times; (NPOP Bagian &minus; Rp 80.000.000)</td></tr>
+        </table>
+      `
+    }
+  ],
+  pbjt: [
+    {
+      title: "Perbup Kampar No. 5 Tahun 2025 (PBJT)",
+      file: "b0e4eab3006cb1e91520d2f747ecc208.pdf",
+      nomor: "NOMOR 5 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 5",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK BARANG JASA TERTENTU",
+      tanggal: "6 Januari 2025",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB II &amp; III &mdash; OBJEK, PENGECUALIAN, DAN TARIF PBJT (Pasal 2 &ndash; Pasal 6)</div>
+        <p>Objek <b>Pajak Barang dan Jasa Tertentu (PBJT)</b> meliputi penjualan, penyerahan, dan/atau konsumsi: (a) Makanan dan/atau Minuman, (b) Tenaga Listrik, (c) Jasa Perhotelan, (d) Jasa Parkir, dan (e) Jasa Kesenian dan Hiburan.</p>
+        <p><b>Pengecualian Utama (Pasal 2 ayat 8):</b> Penyerahan makanan/minuman dengan peredaran usaha <b>tidak melebihi Rp10.000.000,00 per bulan</b>; toko swalayan yang tidak semata-mata menjual makanan/minuman; konsumsi listrik instansi pemerintah, rumah ibadah, dan panti sosial; serta kesenian/hiburan promosi budaya tradisional tanpa dipungut bayaran.</p>
+        <table>
+          <tr><th>Sub-Sektor PBJT (Pasal 6)</th><th>Tarif Resmi</th><th>Keterangan Dasar Pengenaan</th></tr>
+          <tr><td>Makanan dan/atau Minuman (Restoran &amp; Katering)</td><td>10%</td><td>Jumlah pembayaran yang diterima penyedia (Omzet &gt; Rp10 juta/bln)</td></tr>
+          <tr><td>Tenaga Listrik Umum (Sumber Lain)</td><td>10%</td><td>Tagihan beban tetap + pemakaian kWh pascabayar / prabayar</td></tr>
+          <tr><td>Tenaga Listrik Industri Pertambangan Migas (Sumber Lain)</td><td>3%</td><td>Nilai Jual Tenaga Listrik (NJTL)</td></tr>
+          <tr><td>Tenaga Listrik yang Dihasilkan Sendiri</td><td>1,5%</td><td>NJTL berdasarkan KWH Meter atau Kapasitas kVA &times; FD (0,85)</td></tr>
+          <tr><td>Jasa Perhotelan (Hotel, Vila, Wisma, Glamping)</td><td>10%</td><td>Jumlah pembayaran akomodasi &amp; fasilitas penunjang</td></tr>
+          <tr><td>Jasa Parkir</td><td>10%</td><td>Jumlah pembayaran tempat parkir / layanan valet</td></tr>
+          <tr><td>Jasa Kesenian dan Hiburan Umum</td><td>10%</td><td>Jumlah pembayaran penyelenggara hiburan</td></tr>
+          <tr><td>Hiburan Khusus (Diskotek, Karaoke, Kelab Malam, Bar, Mandi Uap/Spa)</td><td>75%</td><td>Jumlah pembayaran kotor (DPP &times; 75%)</td></tr>
+        </table>
+        <div class="pasal">LAMPIRAN I &mdash; PENETAPAN HARGA SATUAN LISTRIK (PBJT-TL)</div>
+        <p>Harga satuan listrik ditetapkan: (1) Bisnis &ge; 200 kVA: <b>Rp1.100/kWh</b>; (2) Industri, Pertambangan &amp; Migas 200 kVA s/d 30.000 kVA: <b>Rp1.100/kWh</b>; (3) Industri, Pertambangan &amp; Migas &gt; 30.000 kVA: <b>Rp950/kWh</b>.</p>
+      `
+    }
+  ],
+  reklame: [
+    {
+      title: "Perbup Kampar No. 3 Tahun 2025 (Pajak Reklame)",
+      file: "6e823c79fcbff07000eff25ae9e07af0 (1).pdf",
+      nomor: "NOMOR 3 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 3",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK REKLAME",
+      tanggal: "6 Januari 2025",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB II &amp; III &mdash; JENIS REKLAME &amp; DASAR PENGENAAN (Pasal 2 &ndash; Pasal 9)</div>
+        <p><b>Pasal 6:</b> Besarnya Pajak Reklame dihitung dengan cara mengalikan <b>tarif pajak reklame sebesar 25% (dua puluh lima persen)</b> dengan <b>Nilai Sewa Reklame (NSR)</b>, di mana <b>NSR = NJOPR + NSPR (NSLR)</b>.</p>
+        <div class="pasal">LAMPIRAN I &mdash; TABEL DASAR PERHITUNGAN NILAI SEWA REKLAME TETAP (PER TAHUN)</div>
+        <table>
+          <tr><th>Jenis Reklame Tetap</th><th>&le; 1 m&sup2;</th><th>1,01 &ndash; 5 m&sup2;</th><th>5,01 &ndash; 25 m&sup2;</th><th>&gt; 25 m&sup2;</th><th>Biaya Tinggi (/m)</th></tr>
+          <tr><td>Megatron / Videotron / LED</td><td>Rp 1.500.000</td><td>Rp 2.500.000</td><td>Rp 3.000.000</td><td>Rp 3.500.000</td><td>Rp 200.000</td></tr>
+          <tr><td>Billboard Tiang dgn Penerangan</td><td>Rp 312.500</td><td>Rp 625.000</td><td>Rp 937.500</td><td>Rp 1.250.000</td><td>Rp 100.000</td></tr>
+          <tr><td>Billboard Tiang Tanpa Penerangan</td><td>Rp 187.500</td><td>Rp 437.500</td><td>Rp 750.000</td><td>Rp 1.000.000</td><td>Rp 100.000</td></tr>
+          <tr><td>Menempel dgn Penerangan</td><td>Rp 125.000</td><td>Rp 250.000</td><td>Rp 625.000</td><td>Rp 875.000</td><td>Rp 100.000</td></tr>
+          <tr><td>Menempel Tanpa Penerangan</td><td>Rp 62.500</td><td>Rp 125.000</td><td>Rp 375.000</td><td>Rp 625.000</td><td>Rp 100.000</td></tr>
+          <tr><td>Reklame Berjalan / Kendaraan</td><td>Rp 100.000</td><td>Rp 150.000</td><td>Rp 200.000</td><td>Rp 250.000</td><td>Rp 0</td></tr>
+        </table>
+        <p><b>Bobot &amp; Skor Nilai Strategis (NSLR):</b> Lokasi Bobot 50% (Kelas I = Skor 10, Kelas II = Skor 7) + Sudut Pandang Bobot 25% (&gt;4 arah = 10, 4 arah = 8, 3 arah = 6, 2 arah = 4, 1 arah = 2) + Ketinggian Bobot 25% (&gt;15m = 10, 10&ndash;14,99m = 8, 6&ndash;9,99m = 6, 3&ndash;5,99m = 4, 0&ndash;2,99m = 2).<br>
+        <b>Satuan Nilai Strategis (SN):</b> &lt;1 m&sup2;: Rp62.500 | 1,01&ndash;3 m&sup2;: Rp125.000 | 3,01&ndash;10 m&sup2;: Rp312.500 | 10,01&ndash;20 m&sup2;: Rp625.000 | 20,01&ndash;40 m&sup2;: Rp1.562.500 | &gt;40 m&sup2;: Rp3.125.000.</p>
+        <p><b>Klasifikasi Jalan:</b> <b>Kelas I</b> meliputi seluruh Jalan Nasional, Jalan Provinsi, Kec. Bangkinang Kota, Kec. Siak Hulu, Kec. Tapung, dan Kec. Tambang. <b>Kelas II</b> meliputi seluruh jalan di 17 kecamatan lainnya di Kab. Kampar.</p>
+      `
+    }
+  ],
+  air: [
+    {
+      title: "Perbup Kampar No. 51 Tahun 2025 (Perubahan PAT)",
+      file: "5e63b1971452c232cbe9ab5c7eff9c47.pdf",
+      nomor: "NOMOR 51 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 52",
+      tentang: "PERUBAHAN ATAS PERATURAN BUPATI KAMPAR NOMOR 38 TAHUN 2024 TENTANG TATA CARA PEMUNGUTAN PAJAK AIR TANAH",
+      tanggal: "31 Desember 2025",
+      pejabat: "BUPATI KAMPAR — AHMAD YUZAR",
+      isi: `
+        <div class="pasal">PENYESUAIAN NILAI PEROLEHAN AIR TANAH / NPA (Pasal 2 &ndash; Pasal 5B)</div>
+        <p>Dasar pengenaan Pajak Air Tanah (PAT) adalah <b>Nilai Perolehan Air Tanah (NPA)</b> yang merupakan perkalian antara <b>Harga Air Baku (HAB = Rp1.103/m&sup3;)</b> dengan <b>Bobot Air Tanah (BAT: 60% Sumber Daya Alam &amp; 40% Peruntukan dan Pengelolaan)</b>. Tarif Pajak Air Tanah ditetapkan sebesar <b>20%</b>.</p>
+        <div class="pasal">LAMPIRAN IA &mdash; TABEL NPA (I. KUALITAS BAIK, ADA SUMBER AIR ALTERNATIF)</div>
+        <table>
+          <tr><th>Volume Pengambilan (m&sup3;)</th><th>Kelompok 1</th><th>Kelompok 2</th><th>Kelompok 3</th><th>Kelompok 4</th><th>Kelompok 5</th></tr>
+          <tr><td>0 &ndash; 50 m&sup3;</td><td>Rp 14.562</td><td>Rp 13.680</td><td>Rp 12.797</td><td>Rp 11.915</td><td>Rp 11.032</td></tr>
+          <tr><td>51 &ndash; 500 m&sup3;</td><td>Rp 16.548</td><td>Rp 15.224</td><td>Rp 13.900</td><td>Rp 12.576</td><td>Rp 11.253</td></tr>
+          <tr><td>501 &ndash; 1.000 m&sup3;</td><td>Rp 19.527</td><td>Rp 17.541</td><td>Rp 15.555</td><td>Rp 13.569</td><td>Rp 11.584</td></tr>
+          <tr><td>1.001 &ndash; 2.500 m&sup3;</td><td>Rp 23.997</td><td>Rp 21.018</td><td>Rp 18.039</td><td>Rp 15.061</td><td>Rp 12.082</td></tr>
+          <tr><td>&gt; 2.500 m&sup3;</td><td>Rp 30.695</td><td>Rp 26.230</td><td>Rp 21.759</td><td>Rp 17.294</td><td>Rp 12.824</td></tr>
+        </table>
+      `
+    },
+    {
+      title: "Perbup Kampar No. 38 Tahun 2024 (Pajak Air Tanah)",
+      file: "7058a905a02e431ae7db0077d6d4fda8.pdf",
+      nomor: "NOMOR 38 TAHUN 2024",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2024 NOMOR 38",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK AIR TANAH",
+      tanggal: "12 November 2024",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">TATA CARA PEMUNGUTAN &amp; KEWAJIBAN WATER METER (Pasal 6 &ndash; Pasal 12)</div>
+        <p>Setiap Wajib Pajak Air Tanah wajib memiliki alat pengukur <b>Water Meter</b> yang terkalibrasi. Penentuan volume air dihitung secara periodik berdasarkan meterisasi air, ditetapkan dengan SKPD, dan dibayar paling lama 15 hari kerja setelah berakhirnya masa pajak.</p>
+      `
+    }
+  ],
+  mblb: [
+    {
+      title: "Perbup Kampar No. 2 Tahun 2025 (Pajak MBLB)",
+      file: "a7d87079f09880cd339ad91ecde281b8.pdf",
+      nomor: "NOMOR 2 TAHUN 2025",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2025 NOMOR 2",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK MINERAL BUKAN LOGAM DAN BATUAN",
+      tanggal: "6 Januari 2025",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB III, IV &amp; VIII &mdash; TARIF PAJAK MBLB (20%), HARGA PATOKAN &amp; OPSEN MBLB (25%)</div>
+        <p><b>Pasal 4 &amp; Pasal 51:</b> Tarif Pajak MBLB ditetapkan sebesar <b>20% (dua puluh persen)</b> dari Nilai Jual (Volume &times; Harga Patokan). Selain itu dikenakan <b>Opsen Pajak MBLB sebesar 25%</b> dari pokok Pajak MBLB terutang yang dibayar bersamaan melalui mekanisme <i>split payment</i>.</p>
+        <table>
+          <tr><th>No</th><th>Jenis Bahan Galian Golongan Batuan (Pasal 5)</th><th>Harga Standar (Rp/m&sup3;)</th><th>Pajak Pokok 20% (Rp/m&sup3;)</th></tr>
+          <tr><td>1</td><td>Andesit</td><td>Rp 75.000</td><td>Rp 15.000</td></tr>
+          <tr><td>2</td><td>Granit</td><td>Rp 80.000</td><td>Rp 16.000</td></tr>
+          <tr><td>3</td><td>Batu Gajah / Batu Gunung</td><td>Rp 60.000</td><td>Rp 12.000</td></tr>
+          <tr><td>4</td><td>Batu Kapur / Batu Gamping</td><td>Rp 45.000</td><td>Rp 9.000</td></tr>
+          <tr><td>5</td><td>Timex</td><td>Rp 30.000</td><td>Rp 6.000</td></tr>
+          <tr><td>6</td><td>Krokos</td><td>Rp 40.000</td><td>Rp 8.000</td></tr>
+          <tr><td>7</td><td>Batu Mangga / Batu Kali</td><td>Rp 55.000</td><td>Rp 11.000</td></tr>
+          <tr><td>8</td><td>Batu Split / Batu Gunung</td><td>Rp 50.000</td><td>Rp 10.000</td></tr>
+          <tr><td>9</td><td>Pasir Pasang / Pasir Bersih</td><td>Rp 40.000</td><td>Rp 8.000</td></tr>
+          <tr><td>10</td><td>Pasir Urug</td><td>Rp 35.000</td><td>Rp 7.000</td></tr>
+          <tr><td>11</td><td>Pasir Cuci / Pasir Tembak</td><td>Rp 45.000</td><td>Rp 9.000</td></tr>
+          <tr><td>12</td><td>Tanah Urug / Tanah Timbun</td><td>Rp 25.000</td><td>Rp 5.000</td></tr>
+          <tr><td>13</td><td>Pasir Kuarsa / Pasir Silika</td><td>Rp 60.000</td><td>Rp 12.000</td></tr>
+          <tr><td>14</td><td>Krikil</td><td>Rp 45.000</td><td>Rp 9.000</td></tr>
+          <tr><td>15</td><td>Sirtu</td><td>Rp 40.000</td><td>Rp 8.000</td></tr>
+        </table>
+      `
+    }
+  ],
+  walet: [
+    {
+      title: "Perbup Kampar No. 39 Tahun 2024 (Sarang Burung Walet)",
+      file: "b3acefa2adbebfff29d1efa771fa0300.pdf",
+      nomor: "NOMOR 39 TAHUN 2024",
+      berita: "BERITA DAERAH KABUPATEN KAMPAR TAHUN 2024 NOMOR 39",
+      tentang: "TATA CARA PEMUNGUTAN PAJAK SARANG BURUNG WALET",
+      tanggal: "12 November 2024",
+      pejabat: "Pj. BUPATI KAMPAR — HAMBALI",
+      isi: `
+        <div class="pasal">BAB II &mdash; HARGA PASARAN UMUM &amp; PERHITUNGAN PAJAK WALET (Pasal 5 &ndash; Pasal 6)</div>
+        <p>Pajak Sarang Burung Walet dipungut atas kegiatan pengambilan dan/atau pengusahaan sarang burung walet dengan <b>Tarif Pajak sebesar 5% (lima persen)</b> dari Nilai Jual (Harga Pasaran Umum &times; Volume Kg).</p>
+        <table>
+          <tr><th>No</th><th>Jenis Sarang Burung Walet (Pasal 5 ayat 1)</th><th>Kualitas Produksi</th><th>Harga Per Kg (Rp)</th></tr>
+          <tr><td>1</td><td>Sarang Burung Walet</td><td>Grade / Kualitas A</td><td>Rp 12.000.000,-</td></tr>
+          <tr><td>2</td><td>Sarang Burung Walet</td><td>Grade / Kualitas B</td><td>Rp 10.000.000,-</td></tr>
+          <tr><td>3</td><td>Sarang Burung Walet</td><td>Grade / Kualitas C</td><td>Rp 8.000.000,-</td></tr>
+        </table>
+        <p><b>Pasal 5 ayat (2):</b> Apabila Wajib Pajak dalam pelaporan SPTPD tidak mencantumkan jumlah omzet penjualan, jenis, dan kualitas produksi, Bapenda melaksanakan penghitungan dengan berpatokan pada Harga Pasaran Umum tertinggi (Grade A: Rp12.000.000/kg).</p>
+      `
+    }
+  ],
+  opsen: [
+    {
+      title: "UU No. 1 Tahun 2022 (HKPD) & Perda Kampar No. 9 Tahun 2023",
+      file: "uu-1-2022-hkpd-opsen.pdf",
+      nomor: "UU NOMOR 1 TAHUN 2022 & PERDA NOMOR 9 TAHUN 2023",
+      berita: "LEMBARAN DAERAH KABUPATEN KAMPAR TAHUN 2023 NOMOR 9",
+      tentang: "OPSEN PAJAK KENDARAAN BERMOTOR (PKB) DAN OPSEN BEA BALIK NAMA KENDARAAN BERMOTOR (BBNKB)",
+      tanggal: "5 Januari 2022 / 2023",
+      pejabat: "PEMERINTAH REPUBLIK INDONESIA & PEMKAB KAMPAR",
+      isi: `
+        <div class="pasal">KETENTUAN OPSEN PKB &amp; OPSEN BBNKB KABUPATEN KAMPAR</div>
+        <p>Berdasarkan Undang-Undang Nomor 1 Tahun 2022 tentang Hubungan Keuangan antara Pemerintah Pusat dan Pemerintahan Daerah (HKPD) serta Perda Kabupaten Kampar Nomor 9 Tahun 2023, Opsen PKB dan Opsen BBNKB merupakan pungutan tambahan pajak menurut persentase tertentu atas pokok PKB dan pokok BBNKB.</p>
+        <table>
+          <tr><th>Jenis Opsen Kabupaten</th><th>Tarif Opsen</th><th>Mekanisme Penyetoran</th></tr>
+          <tr><td>Opsen Pajak Kendaraan Bermotor (PKB)</td><td>66% dari Pokok PKB</td><td>Split Payment otomatis ke RKUD Kab. Kampar saat pembayaran di Samsat</td></tr>
+          <tr><td>Opsen Bea Balik Nama Kendaraan Bermotor (BBNKB)</td><td>66% dari Pokok BBNKB</td><td>Split Payment otomatis ke RKUD Kab. Kampar saat pembayaran di Samsat</td></tr>
+        </table>
+      `
+    }
+  ]
+};
+
+let currentPdfKey = "pbb";
+let currentPdfIdx = 0;
+let currentPdfMode = "salinan";
+
+function openPdfModal(docKey, docIdx=0){
+  if(!PDF_DOCS[docKey]) return;
+  currentPdfKey = docKey;
+  currentPdfIdx = docIdx;
+  renderPdfModal();
+  $("pdf-modal").classList.add("on");
+}
+function closePdfModal(){
+  $("pdf-modal").classList.remove("on");
+}
+function setPdfMode(mode){
+  currentPdfMode = mode;
+  $("tab-mode-salinan").classList.toggle("on", mode==="salinan");
+  $("tab-mode-embed").classList.toggle("on", mode==="embed");
+  $("pdf-body-salinan").style.display = mode==="salinan" ? "block" : "none";
+  $("pdf-body-embed").style.display = mode==="embed" ? "block" : "none";
+}
+function switchPdfDoc(idx){
+  currentPdfIdx = idx;
+  renderPdfModal();
+}
+function renderPdfModal(){
+  const docs = PDF_DOCS[currentPdfKey];
+  const doc = docs[currentPdfIdx] || docs[0];
+  $("pdf-modal-title").textContent = doc.title;
+  $("pdf-doc-switch").innerHTML = docs.length > 1 ? docs.map((d,i)=>`<button class="pdf-tab ${i===currentPdfIdx?'on':''}" onclick="switchPdfDoc(${i})">Dokumen ${i+1}</button>`).join("") : "";
+  $("pdf-body-salinan").innerHTML = `
+    <div class="pdf-paper">
+      <div class="garuda">K</div>
+      <h4>BUPATI KAMPAR &middot; PROVINSI RIAU</h4>
+      <h2>PERATURAN BUPATI KAMPAR</h2>
+      <h3>${doc.nomor}</h3>
+      <h4>TENTANG ${doc.tentang}</h4>
+      <div class="meta-bar">${doc.berita} &bull; File Sumber: <b>${doc.file}</b></div>
+      ${doc.isi}
+      <div class="ttd">
+        <div>
+          Ditetapkan di Bangkinang<br>
+          pada tanggal ${doc.tanggal}<br>
+          <b>${doc.pejabat}</b>
+        </div>
+      </div>
+    </div>
+  `;
+  $("pdf-file-label").textContent = doc.file;
+  $("pdf-frame").src = encodeURI(doc.file);
+}
+function loadLocalPdf(e){
+  const file = e.target.files[0];
+  if(file){
+    const url = URL.createObjectURL(file);
+    $("pdf-file-label").textContent = file.name + " (Lokal)";
+    $("pdf-frame").src = url;
+  }
+}
+
+/* =========================================================================
+   DATA ITEM STASIUN PAJAK & KALKULATOR LENGKAP
+   ========================================================================= */
+const items=[
+  {n:"PBB-P2",s:"Perbup 4/2025 & PMK 85/2024",t:"Pajak Bumi dan Bangunan Perdesaan dan Perkotaan",d:"Pajak atas bumi dan/atau bangunan yang dimiliki, dikuasai, atau dimanfaatkan orang pribadi atau badan, di luar kawasan perkebunan, perhutanan, dan pertambangan. Dasar pengenaannya adalah NJOP hasil penilaian.",o:[B("NJOPTKP","Rp10.000.000 per Wajib Pajak, hanya untuk satu objek per tahun pajak"),B("NJKP dan tarif","NJOP di bawah Rp1 miliar: 75% dan 0,1%. Rp1 sampai Rp2 miliar: 75% dan 0,2%. Di atas Rp2 miliar: 90% dan 0,3%"),B("Rumus","(NJOP bumi + NJOP bangunan - NJOPTKP) x NJKP x tarif"),B("Pembayaran","setiap tahun sesuai SPPT (jatuh tempo 6 bulan)")],c:0xfbbf24,k:"pbb",pdf:"pbb"},
+  {n:"BPHTB",s:"Perbup 1/2025",t:"Bea Perolehan Hak atas Tanah dan Bangunan",d:"Pajak atas perolehan hak atas tanah dan/atau bangunan, antara lain jual beli, waris, hibah wasiat, pemisahan hak, dan lelang. Dasar pengenaannya adalah NPOP dikurangi NPOPTKP.",o:[B("Tarif","5% dari NPOP kena pajak (NPOPKP)"),B("NPOPTKP","Rp80 juta untuk jual beli, pemisahan hak, dan lelang. Rp300 juta untuk waris dan hibah wasiat dari orang tua kandung atau lurus satu derajat. Rp350 juta untuk hibah wasiat bukan dari orang tua kandung"),B("Rumus","(NPOP - NPOPTKP) x 5%"),B("Pembayaran","dilunasi sebelum akta ditandatangani PPAT atau notaris. Kode billing berlaku 30 hari sejak verifikasi"),B("Pengurangan","100% atas permohonan untuk ganti rugi proyek strategis nasional dan kepentingan sosial seperti panti asuhan")],c:0xfb7185,k:"bphtb",pdf:"bphtb"},
+  {n:"PBJT",s:"Perbup 5/2025",t:"Pajak Barang dan Jasa Tertentu",d:"Satu pajak daerah yang memayungi lima jenis pajak atas penjualan atau penyerahan barang dan jasa tertentu kepada konsumen akhir. Pilih salah satu jenisnya di bawah, atau tekan angka 1 sampai 5, untuk melihat tarif dan menghitung pajaknya.",o:["Menggabungkan pajak makanan/minuman (restoran), tenaga listrik, jasa perhotelan, parkir, dan kesenian/hiburan",B("Rumus","dasar pengenaan x tarif"),B("Masa pajak","1 bulan kalender. Dibayar paling lama 15 hari kerja setelah masa pajak berakhir (khusus listrik tanggal 20)"),B("Sanksi","bunga 1% per bulan atas keterlambatan, paling lama 24 bulan")],c:0x34d399,k:"mm",pdf:"pbjt"},
+  {n:"Pajak Reklame",s:"Perbup 3/2025",t:"Pajak atas penyelenggaraan reklame",d:"Pajak atas benda, alat, atau media yang bertujuan komersial untuk memperkenalkan, menganjurkan, atau mempromosikan produk atau jasa. Pajak dihitung sebesar 25% dari Nilai Sewa Reklame (NSR).",o:[B("Tarif","25% dari NSR"),B("Rumus","Pajak = 25% x NSR, dengan NSR = NJOPR + NSLR"),B("Pembayaran","paling lama 15 hari kerja setelah masa pajak berakhir"),"Hitung langsung dengan kalkulator di bawah atau buka aplikasi Kalkulator Reklame Bapenda."],a:'<a class="btn" href="https://bravebrowserzikri-gif.github.io/kalkulator-pajak-reklame/" target="_blank" rel="noopener">&#128279; Buka Kalkulator Pajak Reklame Lengkap</a>',c:0x60a5fa,k:"reklame",pdf:"reklame"},
+  {n:"Pajak Air Tanah",s:"Perbup 38/2024 dan 51/2025",t:"Pajak atas pengambilan air tanah",d:"Pajak atas pengambilan dan/atau pemanfaatan air tanah. Dasar pengenaannya adalah Nilai Perolehan Air Tanah (NPA) per m3 (HAB Rp1.103/m3 dikali Bobot Air Tanah).",o:[B("Tarif","20%"),B("Rumus","volume pengambilan x NPA per m3 x 20%"),B("Kelompok 1","pengambilan dengan produk berupa air"),B("Kelompok 2, 3, 4","produk bukan air pada kegiatan usaha berisiko tinggi, menengah, dan rendah"),B("Kelompok 5","kegiatan sosial, pendidikan, kesehatan, lembaga pemerintahan, dan penyedia air minum BUMN/BUMD/BUMDes"),B("Pembayaran","paling lama 15 hari kerja setelah masa pajak berakhir")],c:0x22d3ee,k:"air",pdf:"air"},
+  {n:"Pajak MBLB",s:"Perbup 2/2025",t:"Mineral Bukan Logam dan Batuan",d:"Pajak atas kegiatan pengambilan mineral bukan logam dan batuan. Dasar pengenaannya adalah nilai jual hasil pengambilan, yaitu volume atau tonase dikali harga patokan tiap jenis.",o:[B("Tarif","20%"),B("Rumus","volume (m3) x harga patokan x 20%"),B("Opsen MBLB","25% dari pajak MBLB terutang, dipungut bersamaan (split payment)"),B("Pembayaran","paling lama 15 hari kerja setelah masa pajak berakhir")],c:0xfb923c,k:"mblb",pdf:"mblb"},
+  {n:"Pajak Sarang Walet",s:"Perbup 39/2024",t:"Pajak Sarang Burung Walet",d:"Pajak atas kegiatan pengambilan dan/atau pengusahaan sarang burung walet. Dasar pengenaannya adalah nilai jual sarang, yaitu harga pasaran umum dikali volume.",o:[B("Tarif","5%"),B("Harga pasaran umum","Grade A Rp12.000.000 per kg, Grade B Rp10.000.000 per kg, Grade C Rp8.000.000 per kg"),B("Rumus","volume (kg) x harga pasaran x 5%"),B("Masa pajak","1 bulan. Penjualan sarang dilaporkan setiap bulan"),B("Tanpa laporan","dihitung dengan harga pasaran tertinggi (Grade A)")],c:0xe879f9,k:"walet",pdf:"walet"},
+  {n:"Opsen PKB dan BBNKB",s:"UU 1/2022 (HKPD)",t:"Pungutan tambahan atas pajak kendaraan bermotor",d:"Pungutan tambahan pajak oleh kabupaten/kota atas pokok PKB dan BBNKB tanpa menambah beban tarif maksimal Wajib Pajak. Dibayar bersamaan dengan PKB dan BBNKB di Samsat.",o:[B("Tarif","66% dari pokok PKB dan 66% dari pokok BBNKB"),B("Rumus","pokok PKB x 66% + pokok BBNKB x 66%"),"Hasilnya langsung masuk ke Rekening Kas Umum Daerah Kabupaten Kampar melalui split payment"],c:0xf87171,k:"opsen",pdf:"opsen"}
+];
+
+const SUBS=[
+  {n:"Makanan dan minuman",s:"Perbup 5/2025",d:"Penjualan atau penyerahan makanan dan/atau minuman oleh restoran (yang menyediakan meja, kursi, atau peralatan makan) serta penyedia jasa boga atau katering.",o:[B("Tarif","10%"),B("Dasar pengenaan","jumlah pembayaran yang diterima penyedia"),B("Tidak dikenakan","peredaran usaha sampai Rp10.000.000 per bulan, toko swalayan yang tidak semata-mata menjual makanan atau minuman, pabrik makanan atau minuman, dan lounge bandara")],c:0xfb923c,k:"mm",pdf:"pbjt"},
+  {n:"Tenaga listrik",s:"Perbup 5/2025",d:"Konsumsi tenaga listrik oleh pengguna akhir, baik dari sumber lain dengan pembayaran maupun yang dihasilkan sendiri.",o:[B("Tarif","10% untuk konsumsi listrik umumnya, 3% untuk industri pertambangan migas dari sumber lain, 1,5% untuk listrik yang dihasilkan sendiri"),B("Nilai jual","pascabayar: beban tetap + pemakaian kWh pada rekening. Prabayar: jumlah pembelian. Dihasilkan sendiri: kWh x harga satuan listrik"),B("Harga satuan","Rp1.100 per kWh (bisnis dan industri sampai 30.000 kVA), Rp950 per kWh (industri di atas 30.000 kVA)"),B("Pembayaran","paling lambat tanggal 20 setiap bulan")],c:0xfde047,k:"tl",pdf:"pbjt"},
+  {n:"Jasa perhotelan",s:"Perbup 5/2025",d:"Jasa penyediaan akomodasi dan fasilitas penunjangnya, termasuk penyewaan ruang rapat atau pertemuan pada penyedia jasa perhotelan.",o:[B("Tarif","10%"),B("Termasuk","hotel, hostel, vila, pondok wisata, motel, losmen, wisma pariwisata, pesanggrahan, rumah penginapan, guesthouse, bungalow, resort, cottage, dan glamping"),B("Tidak dikenakan","asrama pemerintah, tempat tinggal di rumah sakit dan panti, pusat pendidikan/keagamaan, dan biro perjalanan")],c:0xc084fc,k:"jasa",pdf:"pbjt"},
+  {n:"Jasa parkir",s:"Perbup 5/2025",d:"Penyediaan atau penyelenggaraan tempat parkir di luar badan jalan, termasuk penyedia pelayanan memarkirkan kendaraan.",o:[B("Tarif","10%"),B("Dasar pengenaan","jumlah pembayaran kepada penyedia tempat parkir atau pelayanan memarkirkan kendaraan"),B("Tidak dikenakan","parkir yang diselenggarakan pemerintah, parkir perkantoran khusus karyawan sendiri, dan parkir kedutaan")],c:0x38bdf8,k:"jasa",pdf:"pbjt"},
+  {n:"Jasa kesenian dan hiburan",s:"Perbup 5/2025",d:"Jasa penyelenggaraan semua jenis tontonan, pertunjukan, permainan, ketangkasan, rekreasi, dan/atau keramaian untuk dinikmati.",o:[B("Tarif","10%. Khusus diskotek, karaoke, kelab malam, bar, dan mandi uap/spa: 75%"),B("Termasuk","tontonan film, pergelaran musik/tari, kontes, pameran, sirkus, pacuan, olahraga permainan berbayar, wahana rekreasi, panti pijat, dan spa"),B("Tidak dikenakan","promosi budaya tradisional dan layanan masyarakat tanpa dipungut bayaran")],c:0xf472b6,k:"hib",pdf:"pbjt"}
+];
+
+const PADT={n:"Menara PAD Kampar",t:"Penerimaan PAD dan Pajak Daerah 3 Tahun Terakhir",c:0xfbbf24,x:0,z:0};
+const DATA={
+  2024:{pad:[315000000000,318900000000],pjk:[195800000000,211450000000]},
+  2025:{pad:[345000000000,352400000000],pjk:[225000000000,234800000000]},
+  2026:{pad:[375000000000,281250000000],pjk:[245500000000,192600000000]}
+};
+
+const AT=[[[14562,13680,12797,11915,11032],[16548,15224,13900,12576,11253],[19527,17541,15555,13569,11584],[23997,21018,18039,15061,12082],[30695,26230,21759,17294,12824]],[[9929,9046,8164,7281,6399],[11915,10591,9267,7943,6619],[14893,12907,10922,8936,6950],[19363,16385,13406,10427,7449],[26062,21596,17126,12660,8190]],[[6619,5737,4854,3972,3089],[8605,7281,5957,4633,3310],[11584,9598,7612,5626,3641],[16054,13075,10096,7118,4139],[22752,18287,13816,9351,4881]],[[4633,3751,2868,1986,1103],[6619,5295,3972,2648,1324],[9598,7612,5626,3641,1655],[14068,11089,8111,5132,2153],[20767,16301,11831,7365,2895]]];
+const MB=[["Andesit",75000],["Granit",80000],["Batu gajah / batu gunung",60000],["Batu kapur / batu gamping",45000],["Timex",30000],["Krokos",40000],["Batu mangga / batu kali",55000],["Batu split / batu gunung",50000],["Pasir pasang / pasir bersih",40000],["Pasir urug",35000],["Pasir cuci / pasir tembak",45000],["Tanah urug / tanah timbun",25000],["Pasir kuarsa / pasir silika",60000],["Krikil",45000],["Sirtu",40000]];
+const R2=(a,b)=>[a,b],OM=["Omzet atau pembayaran yang diterima per bulan (Rp)"];
+
+const CALC={
+  pbb:{f:[["lt","Luas tanah (m2)",500],["nt","NJOP bumi per m2 (Rp)",464000],["lb","Luas bangunan (m2)",36],["nb","NJOP bangunan per m2 (Rp)",823000],["tkp","Kurangi NJOPTKP Rp10.000.000",[["1","Ya"],["0","Tidak"]]]],fn:v=>{const t=v.lt*v.nt+v.lb*v.nb,k=t<1e9?[.75,.001]:t<=2e9?[.75,.002]:[.9,.003],b=Math.max(0,t-(v.tkp==="1"?1e7:0));return{r:[R2("Total NJOP",rp(t)),R2("NJKP",k[0]*100+"%"),R2("Tarif",(k[1]*100).toFixed(1).replace(".",",")+"%")],t:rp(b*k[0]*k[1])}}},
+  bphtb:{f:[["npop","NPOP / Nilai Transaksi (Rp)",500000000],["j","Jenis perolehan hak",[["8e7","Jual beli, tukar-menukar, pemisahan hak, atau lelang (NPOPTKP Rp80 juta)"],["3e8","Waris atau hibah wasiat dari orang tua kandung / lurus satu derajat (Rp300 juta)"],["3.5e8","Hibah wasiat bukan dari orang tua kandung (Rp350 juta)"],["8.0e7","Waris bukan lurus satu derajat (Rp80 juta)"]]]],fn:v=>{const tkp=parseFloat(v.j),kp=Math.max(0,v.npop-tkp);return{r:[R2("NPOPTKP",rp(tkp)),R2("NPOP kena pajak",rp(kp)),R2("Tarif","5%")],t:rp(kp*.05)}}},
+  mm:{f:[["o",OM[0],25000000]],fn:v=>v.o<=1e7?{r:[R2("Peredaran usaha","sampai Rp10 juta per bulan"),R2("Status","Dikecualikan dari PBJT")],t:rp(0)}:{r:[R2("Dasar pengenaan",rp(v.o)),R2("Tarif","10%")],t:rp(v.o*.1)}},
+  tl:{f:[["kwh","Pemakaian listrik per bulan (kWh, setelah dikali FKM). Isi 0 bila tanpa kWh meter",20000],["kva","Kapasitas pembangkit (kVA), bila tanpa kWh meter",500],["fd","Faktor daya",.85],["bb","Persentase beban (%)",55],["jn","Jam nyala per bulan",240],["h","Harga satuan listrik",[["1100","Rp1.100 per kWh (sampai 30.000 kVA)"],["950","Rp950 per kWh (di atas 30.000 kVA)"]]]],fn:v=>{const h=parseFloat(v.h),n=v.kwh>0?v.kwh*h:v.kva*v.fd*v.bb/100*v.jn*h;return{r:[R2("Nilai jual tenaga listrik (NJTL)",rp(n)),R2("Tarif listrik dihasilkan sendiri","1,5%")],t:rp(n*.015)}}},
+  jasa:{f:[["o",OM[0],50000000]],fn:v=>({r:[R2("Dasar pengenaan",rp(v.o)),R2("Tarif","10%")],t:rp(v.o*.1)})},
+  hib:{f:[["o",OM[0],75000000],["t","Jenis hiburan",[["0.1","Hiburan pada umumnya (10%)"],["0.75","Diskotek, karaoke, kelab malam, bar, mandi uap (75%)"]]]],fn:v=>{const t=parseFloat(v.t);return{r:[R2("Dasar pengenaan",rp(v.o)),R2("Tarif",t*100+"%")],t:rp(v.o*t)}}},
+  reklame:{f:[["j","Jenis Reklame (Lampiran I Perbup 3/2025)",[["bb_terang","Billboard Tiang dgn Penerangan (Tetap)"],["bb_tanpa","Billboard Tiang Tanpa Penerangan (Tetap)"],["videotron","Megatron / Videotron / LED (Tetap)"],["tempel_terang","Reklame Menempel dgn Penerangan (Tetap)"],["kendaraan","Reklame Berjalan / Kendaraan (Tetap)"],["baliho","Insidentil: Baliho / Spanduk / Umbul-Umbul (Per Hari)"]]],["kl","Kelas Jalan Lokasi",[["1","Kelas I (Nasional, Provinsi, Bangkinang Kota, Siak Hulu, Tapung, Tambang)"],["2","Kelas II (17 Kecamatan Lainnya di Kab. Kampar)"]]],["l","Luas Reklame (m2)",4],["tg","Ketinggian Reklame (meter)",4.5],["sd","Sudut Pandang",[["2","1 Arah (Skor 2)"],["4","2 Arah (Skor 4)"],["6","3 Arah (Skor 6)"],["8","4 Arah (Skor 8)"],["10","> 4 Arah (Skor 10)"]]],["hr","Masa Pemasangan (Hari, khusus Insidentil)",30]],fn:v=>{
+    const L=v.l,K=v.tg,kl=+v.kl,sd=+v.sd,hr=Math.max(1,v.hr);
+    if(v.j==="baliho"){
+      const st=kl===1?6250:5000,njopr=L*6250*hr,nslr=L*st*hr,nsr=njopr+nslr;
+      return{r:[R2("NJOPR Insidentil",rp(njopr)),R2("NSLR Insidentil",rp(nslr)),R2("Total NSR",rp(nsr)),R2("Tarif","25%")],t:rp(nsr*.25)};
+    }
+    const tier=L<=1?0:L<=5?1:L<=25?2:3;
+    const tbl={bb_terang:[312500,625000,937500,1250000,100000],bb_tanpa:[187500,437500,750000,1000000,100000],videotron:[1500000,2500000,3000000,3500000,200000],tempel_terang:[125000,250000,625000,875000,100000],kendaraan:[100000,150000,200000,250000,0]}[v.j];
+    const njopr=L*tbl[tier]+K*tbl[4];
+    const sLok=kl===1?10:7,sTg=K>15?10:K>=10?8:K>=6?6:K>=3?4:2;
+    const skor=.5*sLok+.25*sd+.25*sTg;
+    const sn=L>40?3125000:L>20?1562500:L>10?625000:L>3?312500:L>1?125000:62500;
+    const nslr=v.j==="kendaraan"?0:skor*sn,nsr=njopr+nslr;
+    return{r:[R2("NJOPR",rp(njopr)),R2("Skor Strategis",skor.toFixed(2)+" x "+rp(sn)),R2("NSLR",rp(nslr)),R2("Nilai Sewa Reklame (NSR)",rp(nsr))],t:rp(nsr*.25)};
+  }},
+  air:{f:[["q","Kualitas air dan sumber alternatif",[["0","Kualitas baik, ada sumber air alternatif"],["1","Kualitas baik, tidak ada sumber air alternatif"],["2","Kualitas tidak baik, ada sumber air alternatif"],["3","Kualitas tidak baik, tidak ada sumber air alternatif"]]],["k","Kelompok peruntukan",[["1","Kelompok 1 (Produk Berupa Air)"],["2","Kelompok 2 (Risiko Tinggi / Pabrik Sawit / Hotel Bintang 3-5)"],["3","Kelompok 3 (Risiko Menengah / Hotel Bintang 1-2)"],["4","Kelompok 4 (Risiko Rendah / Restoran / Bengkel / SPBU)"],["5","Kelompok 5 (Sosial / Pendidikan / Kesehatan / SPAM)"]]],["v","Volume pengambilan (m3 per bulan)",400]],fn:v=>{const b=v.v<=50?0:v.v<=500?1:v.v<=1000?2:v.v<=2500?3:4,n=AT[+v.q][b][+v.k-1];return{r:[R2("NPA per m3",rp(n)),R2("Volume",v.v+" m3"),R2("Tarif","20%")],t:rp(v.v*n*.2)}}},
+  mblb:{f:[["j","Jenis bahan galian",MB.map((m,i)=>[String(i),m[0]+" (Rp"+m[1].toLocaleString("id-ID")+" per m3)"])],["v","Volume pengambilan (m3)",1000]],fn:v=>{const h=MB[+v.j][1],p=v.v*h*.2;return{r:[R2("Harga patokan",rp(h)+" per m3"),R2("Nilai jual hasil",rp(v.v*h)),R2("Pokok MBLB (20%)",rp(p)),R2("Opsen MBLB (25% Pokok)",rp(p*.25))],t:rp(p*1.25)}}},
+  walet:{f:[["g","Kualitas sarang",[["12000000","Grade A (Rp12.000.000 per kg)"],["10000000","Grade B (Rp10.000.000 per kg)"],["8000000","Grade C (Rp8.000.000 per kg)"]]],["v","Volume penjualan per bulan (kg)",2]],fn:v=>{const n=parseFloat(v.g)*v.v;return{r:[R2("Nilai jual sarang",rp(n)),R2("Tarif","5%")],t:rp(n*.05)}}},
+  opsen:{f:[["a","Pokok PKB (Rp)",1500000],["b","Pokok BBNKB (Rp)",0]],fn:v=>({r:[R2("Opsen PKB 66%",rp(v.a*.66)),R2("Opsen BBNKB 66%",rp(v.b*.66))],t:rp((v.a+v.b)*.66)})}
+};
+
+let calcKey="";
+function calcUI(k){
+  const c=CALC[k];if(!c)return"";
+  return'<div class="calc"><h4>Kalkulator Simulasi Resmi</h4>'+c.f.map(([id,l,d])=>"<label>"+l+(Array.isArray(d)?'<select data-id="'+id+'">'+d.map(([v,t])=>'<option value="'+v+'">'+t+"</option>").join("")+"</select>":'<input data-id="'+id+'" type="number" inputmode="decimal" min="0" step="any" placeholder="0" value="'+(d!==undefined?d:"")+'">')+"</label>").join("")+'<div id="cr"></div></div>';
+}
+function calcRun(){
+  const c=CALC[calcKey],cr=$("cr");if(!c||!cr)return;
+  const v={};document.querySelectorAll("#calc [data-id]").forEach(e=>v[e.dataset.id]=e.tagName==="SELECT"?e.value:parseFloat(e.value)||0);
+  const r=c.fn(v);
+  cr.innerHTML=r.r.map(([a,b])=>"<div><span>"+a+"</span><b>"+b+"</b></div>").join("")+'<div class="tot"><span>Total Pajak Terutang</span><b>'+r.t+"</b></div>";
+}
+function padHTML(){
+  const m=v=>v==null?"-":"Rp"+(v/1e9).toLocaleString("id-ID",{maximumFractionDigits:2})+" M",p=(a,b)=>a&&b!=null?(b/a*100).toFixed(1).replace(".",",")+"%":"-";
+  return'<table class="tb"><tr><th>Tahun</th><th>Target</th><th>Realisasi</th><th>%</th></tr>'+[["pad","PAD Kabupaten Kampar"],["pjk","Pajak Daerah"]].map(([k,l])=>'<tr class="sec"><td colspan="4">'+l+"</td></tr>"+Object.keys(DATA).map(y=>{const[t,r]=DATA[y][k];return"<tr><td>"+y+(y==="2026"?" (Berjalan)":"")+"</td><td>"+m(t)+"</td><td>"+m(r)+"</td><td>"+p(t,r)+"</td></tr>"}).join("")).join("")+'</table><div class="btn-row"><a class="btn" href="https://bravebrowserzikri-gif.github.io/Realisasi-Pajak-Daerah-2026/" target="_blank" rel="noopener">&#128202; Buka Dashboard Lengkap 2026</a></div>';
+}
+
+const N=items.length,PB=2,R=46;
+
+/* =========================================================================
+   SETUP SCENE, ENVIRONMENT MAP & PENCAHAYAAN (CORE VISUAL)
+   ========================================================================= */
+const rd=new T.WebGLRenderer({canvas:$("c"),antialias:true});
+rd.setPixelRatio(Math.min(devicePixelRatio,1.75));
+rd.shadowMap.enabled=true;
+const sc=new T.Scene(),cam=new T.PerspectiveCamera(60,1,.1,400);
+cam.position.set(0,50,-70);
+
+sc.background=new T.CanvasTexture(cvs(2,256,(q,w,h)=>{q.fillStyle=grad(q,h,[[0,"#02030f"],[.5,"#0b1040"],[1,"#6b1d6b"]]);q.fillRect(0,0,w,h)}));
+sc.fog=new T.Fog(0x160a38,55,240);
+const ec=cvs(128,128,(q,w,h)=>{q.fillStyle=grad(q,h,[[0,"#0a1030"],[.45,"#2a2a8a"],[.5,"#22d3ee"],[.56,"#a21caf"],[1,"#05060f"]]);q.fillRect(0,0,w,h)});
+const env=new T.CubeTexture([ec,ec,ec,ec,ec,ec]);env.needsUpdate=true;sc.environment=env;
+
+sc.add(new T.AmbientLight(0x6070ff,.55));
+const dl=new T.DirectionalLight(0xbfd0ff,.95);
+dl.castShadow=true;dl.shadow.mapSize.set(1024,1024);
+Object.assign(dl.shadow.camera,{left:-28,right:28,top:28,bottom:-28,far:80});
+sc.add(dl,dl.target);
+
+// Lantai & Grid Jalan Sirkular
+const fl=mesh(new T.CircleGeometry(230,64),M(0x070b1e,{roughness:.35,metalness:.7}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;sc.add(fl);
+const gd=new T.GridHelper(460,115,0x22d3ee,0x143a73);gd.position.y=.03;gd.material.transparent=true;gd.material.opacity=.45;sc.add(gd);
+[R-4.8,R+4.8].forEach(r=>{const g=mesh(new T.RingGeometry(r-.12,r+.12,128),new T.MeshBasicMaterial({color:0x22d3ee}),0,.05,0);g.rotation.x=-Math.PI/2;sc.add(g)});
+
+// Skyline Gedung Kota & Bintang
+const wt=new T.CanvasTexture(cvs(64,128,(q)=>{q.fillStyle="#05081a";q.fillRect(0,0,64,128);for(let y=4;y<124;y+=8)for(let x=4;x<60;x+=8)if(Math.random()<.4){q.fillStyle=["#22d3ee","#fbbf24","#e879f9"][Math.random()*3|0];q.fillRect(x,y,4,4)}}));
+const bmat=M(0x0a0f2a,{roughness:.6,emissive:0xffffff,emissiveMap:wt,emissiveIntensity:.9});
+for(let i=0;i<70;i++){const a=Math.random()*TAU,d=125+Math.random()*70,h=25+Math.random()*80;sc.add(mesh(new T.BoxGeometry(8+Math.random()*10,h,8+Math.random()*10),bmat,Math.sin(a)*d,h/2,Math.cos(a)*d))}
+{const p=[];for(let i=0;i<500;i++)p.push((Math.random()-.5)*500,60+Math.random()*120,(Math.random()-.5)*500);const g=new T.BufferGeometry();g.setAttribute("position",new T.Float32BufferAttribute(p,3));sc.add(new T.Points(g,new T.PointsMaterial({color:0xcfe9ff,size:.9,fog:false})))}
+
+/* =========================================================================
+   MODELING 3D MENARA & SIMBOL SPESIFIK TIAP PAJAK DAERAH
+   ========================================================================= */
+const bt=new T.CanvasTexture(cvs(2,128,(q,w,h)=>{q.fillStyle=grad(q,h,[[0,"rgba(255,255,255,0)"],[1,"rgba(255,255,255,.9)"]]);q.fillRect(0,0,w,h)}));
+const beam=(c,r,h,o)=>new T.Mesh(new T.CylinderGeometry(r,r,h,40,1,true),new T.MeshBasicMaterial({map:bt,color:c,transparent:true,opacity:o,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));
+
+function buildStationModel(k, c){
+  const g = new T.Group();
+  const holoMat = new T.MeshPhysicalMaterial({color:c,emissive:c,emissiveIntensity:.35,metalness:.7,roughness:.18,clearcoat:1,transparent:true,opacity:.88});
+  const darkMat = M(0x0d1633,{metalness:.85,roughness:.25});
+  const wireMat = new T.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:.35});
+  const glowMat = new T.MeshBasicMaterial({color:c});
+
+  if(k==="pbb"){
+    // Simbol PBB-P2: Menara Kembar Properti + Rumah Atap Limas + Kapling Bumi
+    const baseGrid = mesh(new T.BoxGeometry(3.2,.16,3.2),holoMat,0,-1.2,0);
+    const t1 = mesh(new T.BoxGeometry(1.1,3.2,1.1),darkMat,-.7,.4,-.4);
+    const t1w = mesh(new T.BoxGeometry(1.12,3.22,1.12),wireMat,-.7,.4,-.4);
+    const t2 = mesh(new T.BoxGeometry(.9,2.3,.9),holoMat,.75,-.05,-.4);
+    const bridge = mesh(new T.BoxGeometry(1.5,.28,.5),glowMat,0,.8,-.4);
+    const house = mesh(new T.BoxGeometry(1.1,.85,1.0),darkMat,.1,-.7,.75);
+    const roof = mesh(new T.ConeGeometry(.95,.75,4),holoMat,.1,-.05,.75);
+    roof.rotation.y = Math.PI/4;
+    g.add(baseGrid,t1,t1w,t2,bridge,house,roof);
+  }
+  else if(k==="bphtb"){
+    // Simbol BPHTB: Dokumen Akta / Sertifikat Tanah Berdiri + Segel Emas + 2 Pilar Hukum
+    const doc = mesh(new T.BoxGeometry(2.1,2.9,.22),darkMat,0,.2,0);
+    const docFrame = mesh(new T.BoxGeometry(2.2,3.0,.18),holoMat,0,.2,-.04);
+    for(let i=0;i<4;i++){
+      g.add(mesh(new T.BoxGeometry(1.3,.09,.26),glowMat,0,1.0-i*.42,0));
+    }
+    const seal = mesh(new T.CylinderGeometry(.42,.42,.3,24),M(0xfbbf24,{emissive:0xf59e0b,emissiveIntensity:.5,metalness:.9,roughness:.15}),.45,-.7,0);
+    seal.rotation.x = Math.PI/2;
+    const pL = mesh(new T.CylinderGeometry(.22,.26,3.1,16),holoMat,-1.45,.2,0);
+    const pR = mesh(new T.CylinderGeometry(.22,.26,3.1,16),holoMat,1.45,.2,0);
+    g.add(doc,docFrame,seal,pL,pR);
+  }
+  else if(k==="mm"){
+    // Simbol PBJT: Menara Grand Hotel & Kubah Kuliner + Inti Energi Listrik
+    const hotel = mesh(new T.CylinderGeometry(1.15,1.35,2.8,8),darkMat,0,.1,0);
+    const hotelWire = mesh(new T.CylinderGeometry(1.18,1.38,2.82,8),wireMat,0,.1,0);
+    const crownRing = mesh(new T.TorusGeometry(1.3,.1,12,32),glowMat,0,1.4,0);
+    crownRing.rotation.x = Math.PI/2;
+    const dome = mesh(new T.SphereGeometry(.85,20,16,0,TAU,0,Math.PI/2),holoMat,0,1.5,0);
+    const starCore = mesh(new T.OctahedronGeometry(.55,0),M(0xfde047,{emissive:0xfacc15,emissiveIntensity:.8}),0,2.6,0);
+    g.add(hotel,hotelWire,crownRing,dome,starCore);
+  }
+  else if(k==="reklame"){
+    // Simbol Pajak Reklame: Konstruksi Tiang Gantry + Layar Megatron/Videotron Menyala
+    constscrTex = new T.CanvasTexture(cvs(256,128,(q)=>{
+      q.fillStyle="#06152d";q.fillRect(0,0,256,128);
+      q.strokeStyle="#60a5fa";q.lineWidth=6;q.strokeRect(6,6,244,116);
+      q.fillStyle="#22d3ee";q.font="800 28px Orbitron,sans-serif";q.textAlign="center";
+      q.fillText("PAJAK REKLAME",128,58);
+      q.fillStyle="#fbbf24";q.font="700 20px sans-serif";
+      q.fillText("PERBUP 3 / 2025",128,94);
+    }));
+    const poleL = mesh(new T.CylinderGeometry(.16,.22,2.2,12),darkMat,-1.1,-.6,0);
+    const poleR = mesh(new T.CylinderGeometry(.16,.22,2.2,12),darkMat,1.1,-.6,0);
+    const frame = mesh(new T.BoxGeometry(3.4,1.95,.32),holoMat,0,.7,0);
+    const screen = mesh(new T.PlaneGeometry(3.1,1.65),new T.MeshBasicMaterial({map:constscrTex}),0,.7,.18);
+    const screenBack = mesh(new T.PlaneGeometry(3.1,1.65),new T.MeshBasicMaterial({map:constscrTex}),0,.7,-.18);
+    screenBack.rotation.y = Math.PI;
+    const lamp1 = mesh(new T.BoxGeometry(.35,.12,.4),glowMat,-.9,1.75,.1);
+    const lamp2 = mesh(new T.BoxGeometry(.35,.12,.4),glowMat,.9,1.75,.1);
+    g.add(poleL,poleR,frame,screen,screenBack,lamp1,lamp2);
+  }
+  else if(k==="air"){
+    // Simbol Pajak Air Tanah: Menara Tangki Reservoir Kaca + Kolom Air + Water Meter
+    const base = mesh(new T.CylinderGeometry(1.3,1.45,.4,20),darkMat,0,-1.1,0);
+    const glassTank = mesh(new T.CylinderGeometry(1.15,1.15,2.5,24,1,true),new T.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:.35}),0,.2,0);
+    const waterCol = mesh(new T.CylinderGeometry(1.02,1.02,2.1,24),holoMat,0,.05,0);
+    const topCap = mesh(new T.CylinderGeometry(1.25,1.25,.25,20),darkMat,0,1.5,0);
+    const drop = mesh(new T.ConeGeometry(.55,1.1,20),glowMat,0,2.3,0);
+    const meterRing = mesh(new T.TorusGeometry(1.35,.08,10,32),glowMat,0,.2,0);
+    meterRing.rotation.x = Math.PI/2;
+    g.add(base,glassTank,waterCol,topCap,drop,meterRing);
+  }
+  else if(k==="mblb"){
+    // Simbol Pajak MBLB: Gugusan Kristal Mineral & Batuan Andesit/Granit/Kuarsa
+    const rockBase = mesh(new T.CylinderGeometry(1.6,1.9,.45,7),darkMat,0,-1.1,0);
+    const c1 = mesh(new T.ConeGeometry(.75,2.9,5),holoMat,0,.35,0);
+    const c1w = mesh(new T.ConeGeometry(.77,2.92,5),wireMat,0,.35,0);
+    const c2 = mesh(new T.ConeGeometry(.55,2.1,5),holoMat,-.85,-.1,.3);
+    c2.rotation.z = .32;
+    const c3 = mesh(new T.ConeGeometry(.5,1.9,5),holoMat,.85,-.15,-.25);
+    c3.rotation.z = -.35;
+    const ore = mesh(new T.DodecahedronGeometry(.48,0),glowMat,.25,-.5,.85);
+    g.add(rockBase,c1,c1w,c2,c3,ore);
+  }
+  else if(k==="walet"){
+    // Simbol Pajak Sarang Walet: Menara Rumah Walet Bertingkat + Cincin Sarang + Siluet Walet
+    const tower = mesh(new T.BoxGeometry(1.8,2.7,1.8),darkMat,0,.05,0);
+    for(let i=0;i<3;i++){
+      const tier = mesh(new T.BoxGeometry(1.96,.12,1.96),holoMat,0,-.7+i*.8,0);
+      g.add(tier);
+    }
+    const roof = mesh(new T.ConeGeometry(1.45,.8,4),holoMat,0,1.8,0);
+    roof.rotation.y = Math.PI/4;
+    const nestHalo = mesh(new T.TorusGeometry(1.45,.1,10,32),glowMat,0,.4,0);
+    nestHalo.rotation.x = Math.PI/3;
+    g.add(tower,roof,nestHalo);
+  }
+  else if(k==="opsen"){
+    // Simbol Opsen PKB & BBNKB: Podium Showroom + Miniatur Mobil Siber + Gerbang Sinergi
+    const arch = mesh(new T.TorusGeometry(1.75,.12,12,36,Math.PI),holoMat,0,-.2,0);
+    const plat = mesh(new T.CylinderGeometry(1.5,1.65,.3,24),darkMat,0,-.9,0);
+    const miniCar = mesh(new T.BoxGeometry(1.5,.42,.85),holoMat,0,-.5,0);
+    const miniCab = mesh(new T.BoxGeometry(.85,.32,.72),glowMat,-.1,-.18,0);
+    const badge = mesh(new T.OctahedronGeometry(.55,0),glowMat,0,1.95,0);
+    g.add(arch,plat,miniCar,miniCab,badge);
+  }
+  return g;
+}
+
+let orb;
+items.forEach((it,i)=>{
+  const a=i/N*TAU,g=new T.Group();
+  g.position.set(Math.sin(a)*R,0,Math.cos(a)*R);
+  // Base Podium Stasiun
+  g.add(mesh(new T.CylinderGeometry(4.6,5.1,.45,48),M(0x0a1230,{metalness:.85,roughness:.25}),0,.22,0));
+  g.add(mesh(new T.CylinderGeometry(3.2,3.6,.35,32),M(0x111c42,{metalness:.8,roughness:.3}),0,.55,0));
+  const rg=mesh(new T.TorusGeometry(4.6,.13,10,64),new T.MeshBasicMaterial({color:it.c}),0,.48,0);
+  rg.rotation.x=Math.PI/2;g.add(rg);
+  const gl=mesh(new T.CircleGeometry(5.8,40),new T.MeshBasicMaterial({color:it.c,transparent:true,opacity:.22,blending:T.AdditiveBlending,depthWrite:false}),0,.08,0);
+  gl.rotation.x=-Math.PI/2;g.add(gl);
+  const bm=beam(it.c,4.3,17,.22);bm.position.y=8.5;g.add(bm);
+  // Pilar Penyangga Model
+  g.add(mesh(new T.CylinderGeometry(.55,.85,2.4,16),M(0x0a1230,{metalness:.85}),0,1.4,0));
+  // Rakitan 3D Simbol Pajak Spesifik
+  const ic=buildStationModel(it.k,it.c);
+  ic.position.y=4.8;g.add(ic);
+
+  if(i===PB){
+    orb=new T.Group();orb.position.y=4.8;
+    SUBS.forEach((u,k)=>{
+      const o=mesh(new T.OctahedronGeometry(.38),new T.MeshBasicMaterial({color:u.c}),Math.sin(k/5*TAU)*3.1,0,Math.cos(k/5*TAU)*3.1);
+      orb.add(o);
+    });
+    g.add(orb);
+  }
+  sc.add(g);
+  const l=document.createElement("div");
+  l.className="lb";l.style.setProperty("--c",hx(it.c));l.textContent=it.n;
+  document.body.appendChild(l);
+  Object.assign(it,{g,ic,rg,l,x:g.position.x,z:g.position.z,s:1});
+});
+
+// Menara PAD Kampar (Tengah)
+const coin=new T.Group();
+{
+  const tx=new T.CanvasTexture(cvs(256,256,(q)=>{
+    q.fillStyle=grad(q,256,[[0,"#ffe27a"],[1,"#d4a017"]]);q.fillRect(0,0,256,256);
+    q.strokeStyle="#8a6508";q.lineWidth=8;q.beginPath();q.arc(128,128,112,0,7);q.stroke();
+    q.fillStyle="#6b4a00";q.textAlign="center";q.font="800 64px Orbitron,sans-serif";q.fillText("PAD",128,126);
+    q.font="700 26px sans-serif";q.fillText("Kampar",128,172);
+  })),cm=M(0xffffff,{map:tx,metalness:.6,roughness:.3});
+  const cb=mesh(new T.CylinderGeometry(2.1,2.1,.38,64),M(0xd4a017,{metalness:.9,roughness:.25}));cb.rotation.x=Math.PI/2;
+  const f1=mesh(new T.CircleGeometry(2.08,64),cm,0,0,.2),f2=mesh(new T.CircleGeometry(2.08,64),cm,0,0,-.2);f2.rotation.y=Math.PI;
+  coin.add(cb,f1,f2);coin.position.y=6.2;
+  const padBase=new T.Group();
+  padBase.add(
+    mesh(new T.CylinderGeometry(3.4,4.0,.6,32),M(0x0a1230,{metalness:.85,roughness:.25}),0,.3,0),
+    mesh(new T.CylinderGeometry(2.2,2.8,2.4,32),M(0x101c42,{metalness:.85,roughness:.3}),0,1.5,0),
+    mesh(new T.TorusGeometry(3.5,.12,10,64),new T.MeshBasicMaterial({color:0xfbbf24}),0,.62,0)
+  );
+  padBase.children[2].rotation.x=Math.PI/2;
+  for(let i=0;i<4;i++){
+    const ang=i*Math.PI/2+Math.PI/4;
+    const pil=mesh(new T.BoxGeometry(.35,3.2,.6),M(0xd4a017,{metalness:.9,roughness:.2}),Math.sin(ang)*2.3,1.8,Math.cos(ang)*2.3);
+    pil.rotation.y=ang;padBase.add(pil);
+  }
+  sc.add(coin,padBase);
+  const cbm=beam(0xfbbf24,3.1,16,.24);cbm.position.y=8;sc.add(cbm);
+}
+const padL=document.createElement("div");padL.className="lb";padL.style.setProperty("--c","#fbbf24");padL.textContent="Menara PAD Kampar";document.body.appendChild(padL);
+const halos=[0,1].map(i=>{const h=mesh(new T.TorusGeometry(3.2+i*.85,.045,8,80),new T.MeshBasicMaterial({color:i?0xe879f9:0x22d3ee}),0,6.2,0);sc.add(h);return h});
+
+/* =========================================================================
+   MODELING MOBIL SUPERCAR FUTURISTIK (SESUAI FILE ACUAN)
+   ========================================================================= */
+function ex(pts,d,mat,bs=.1){
+  const s=new T.Shape();pts.forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));
+  const g=new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:bs,bevelSize:bs,bevelSegments:4});
+  g.translate(0,0,-d/2);const m=new T.Mesh(g,mat);m.castShadow=true;return m;
+}
+const car=new T.Group(),body=new T.Group(),wh=[];car.add(body);
+const paint=new T.MeshPhysicalMaterial({color:0xdbe4ff,metalness:.9,roughness:.2,clearcoat:1,clearcoatRoughness:.04}),
+      carbon=M(0x0b0f1a,{metalness:.5,roughness:.4}),
+      neon=new T.MeshBasicMaterial({color:0x22d3ee}),
+      em=c=>new T.MeshBasicMaterial({color:c}),
+      add=(...a)=>a.forEach(o=>body.add(o));
+{
+  const sh=new T.Shape();
+  sh.moveTo(-2.1,.38);sh.lineTo(-2.25,.45);sh.lineTo(-2.28,.8);
+  sh.bezierCurveTo(-2.2,.92,-1.95,.95,-1.6,.96);sh.lineTo(.5,.9);
+  sh.bezierCurveTo(1.2,.86,1.9,.74,2.25,.55);
+  sh.bezierCurveTo(2.32,.48,2.3,.4,2.2,.38);
+  const g=new T.ExtrudeGeometry(sh,{depth:1.5,bevelEnabled:true,bevelThickness:.12,bevelSize:.1,bevelSegments:5,curveSegments:24});
+  g.translate(0,0,-.75);const m=new T.Mesh(g,paint);m.castShadow=true;body.add(m);
+}
+add(
+  ex([[.85,.88],[.3,1.15],[-.9,1.17],[-1.75,.93]],1.1,new T.MeshPhysicalMaterial({color:0x050b18,metalness:1,roughness:.04,clearcoat:1,transparent:true,opacity:.93}),.06),
+  mesh(new T.BoxGeometry(1.1,.05,1.0),paint,-.35,1.22,0),
+  mesh(new T.BoxGeometry(.5,.04,1.7),carbon,2.15,.34,0),mesh(new T.BoxGeometry(.04,.02,1.7),neon,2.4,.34,0),
+  mesh(new T.BoxGeometry(.5,.12,1.4),carbon,-2.2,.45,0),mesh(new T.BoxGeometry(.5,.04,1.7),carbon,-2.05,1.12,0),
+  mesh(new T.BoxGeometry(.06,.3,.06),carbon,-2.05,.98,.5),mesh(new T.BoxGeometry(.06,.3,.06),carbon,-2.05,.98,-.5),
+  mesh(new T.BoxGeometry(.05,.07,1.3),em(0xffffff),2.38,.62,0),mesh(new T.BoxGeometry(.05,.08,1.45),em(0xff2244),-2.37,.82,0)
+);
+[1,-1].forEach(d=>add(
+  mesh(new T.BoxGeometry(3.4,.03,.02),neon,0,.52,d*.88),
+  mesh(new T.BoxGeometry(3,.07,.06),carbon,0,.4,d*.9),
+  mesh(new T.BoxGeometry(.2,.1,.18),carbon,.55,1.02,d*.95),
+  mesh(new T.BoxGeometry(.9,.012,.04),neon,1.2,.97,d*.35)
+));
+[-1,1].forEach(d=>{
+  const c=new T.Mesh(new T.ConeGeometry(.9,7,24,1,true),new T.MeshBasicMaterial({color:0xbfe9ff,transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide}));
+  c.rotation.z=Math.PI/2;c.position.set(5.8,.62,d*.5);add(c);
+});
+const ug=mesh(new T.PlaneGeometry(4.6,2.2),new T.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:.5,blending:T.AdditiveBlending,depthWrite:false}),0,.1,0);ug.rotation.x=-Math.PI/2;car.add(ug);
+const cl=new T.PointLight(0x22d3ee,1.4,10);cl.position.y=.4;car.add(cl);
+
+[[1.35,.9],[1.35,-.9],[-1.35,.9],[-1.35,-.9]].forEach(([x,z])=>{
+  const st=new T.Group(),pv=new T.Group(),sd=Math.sign(z);st.position.set(x,.42,z);
+  const ar=mesh(new T.CylinderGeometry(.56,.56,.02,32),M(0x04060b),0,0,sd*-.01);ar.rotation.x=Math.PI/2;
+  const tr=mesh(new T.CylinderGeometry(.43,.43,.34,32),M(0x0a0a0e,{roughness:.85}));tr.rotation.x=Math.PI/2;tr.castShadow=true;
+  const rm=mesh(new T.CylinderGeometry(.31,.31,.3,32),M(0x1b2233,{metalness:1,roughness:.25}));rm.rotation.x=Math.PI/2;pv.add(tr,rm);
+  for(let i=0;i<3;i++){const sp=mesh(new T.BoxGeometry(.58,.06,.04),M(0xdbe4ff,{metalness:1,roughness:.2}),0,0,sd*.16);sp.rotation.z=i*Math.PI/3;pv.add(sp)}
+  pv.add(mesh(new T.TorusGeometry(.3,.03,8,32),neon,0,0,sd*.17));
+  st.add(ar,pv,mesh(new T.BoxGeometry(.12,.2,.06),em(0xfbbf24),.2,0,sd*.12));car.add(st);wh.push({st,pv,f:x>0});
+});
+sc.add(car);
+
+/* =========================================================================
+   KONTROL FISIKA KENDARAAN, PANEL INTERAKTIF & MINIMAP
+   ========================================================================= */
+const K={},P={x:0,z:-18,h:0,v:0};let st=0,pvv=0,act=-1,sub=-1,done=false;const vis=new Set();
+
+addEventListener("keydown",e=>{
+  if(e.code==="Escape"){closePdfModal();return}
+  if(/INPUT|SELECT/.test(e.target.tagName)||$("pdf-modal").classList.contains("on"))return;
+  K[e.code]=1;
+  if(/^(Arrow|Space)/.test(e.code))e.preventDefault();
+  if(/^Digit[1-5]$/.test(e.code))pickSub(+e.code.slice(5)-1);
+  if(e.code==="KeyP" && act>=0 && act<N){
+    const cur=sub>=0?SUBS[sub]:items[act];
+    if(cur && cur.pdf) openPdfModal(cur.pdf);
+  }
+});
+addEventListener("keyup",e=>K[e.code]=0);
+addEventListener("focusin",e=>{if(/INPUT|SELECT/.test(e.target.tagName))Object.keys(K).forEach(k=>K[k]=0)});
+$("calc").addEventListener("input",()=>calcRun());
+$("calc").addEventListener("change",()=>calcRun());
+document.querySelectorAll("#pad button").forEach(b=>{
+  const k=b.dataset.k;
+  b.onpointerdown=e=>{K[k]=1;e.preventDefault()};
+  b.onpointerup=b.onpointerleave=b.onpointercancel=()=>K[k]=0;
+});
+
+function show(){
+  const i=act<0?null:act===N?PADT:sub>=0?SUBS[sub]:items[act];
+  $("panel").classList.toggle("on",!!i);
+  $("hint").style.opacity=i?0:1;
+  if(!i)return;
+  $("pt").textContent=i.n;
+  $("ps").textContent=(sub>=0?"Bagian dari PBJT":i.t)+(i.s?" \u00b7 "+i.s:"");
+  $("pd").textContent=i.d||"";
+  $("po").innerHTML=(i.o||[]).map(s=>"<li>"+s+"</li>").join("");
+  $("ch").innerHTML=act===PB?SUBS.map((u,k)=>'<button class="chip'+(k===sub?" on":"")+'" data-k="'+k+'">'+(k+1)+". "+u.n+"</button>").join(""):"";
+
+  // Tombol PDF Peraturan + Tautan Eksternal
+  let exHTML = "";
+  if(act===N){
+    exHTML = padHTML();
+  } else {
+    const pdfBtn = i.pdf ? `<button class="btn pdf-btn" onclick="openPdfModal('${i.pdf}')">&#128196; Lihat PDF Peraturan (${i.s})</button>` : "";
+    exHTML = `<div class="btn-row">${pdfBtn}${i.a||""}</div>`;
+  }
+  $("ex").innerHTML = exHTML;
+
+  calcKey=i.k||"";
+  $("calc").innerHTML=calcUI(calcKey);
+  calcRun();
+  document.documentElement.style.setProperty("--ac",hx(i.c));
+}
+
+function pickSub(k){if(act!==PB)return;sub=sub===k?-1:k;show()}
+$("ch").onclick=e=>{const k=e.target.dataset.k;if(k!==undefined)pickSub(+k)};
+
+function hud(){
+  $("vis").textContent="Stasiun dikunjungi "+vis.size+"/"+N;
+  $("bar").style.width=vis.size/N*100+"%";
+  if(vis.size===N&&!done){
+    done=true;
+    const t=$("toast");
+    t.textContent="Misi selesai! Kamu sudah menjelajahi semua jenis Pajak Daerah Kabupaten Kampar.";
+    t.classList.add("on");
+    setTimeout(()=>t.classList.remove("on"),5000);
+  }
+}
+
+function rs(){const w=innerWidth,h=innerHeight;rd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener("resize",rs);rs();show();
+
+const mc=$("map").getContext("2d"),vv=new T.Vector3(),fw=new T.Vector3(),tp=new T.Vector3();
+let lt=performance.now();
+
+function drawMap(){
+  mc.clearRect(0,0,140,140);mc.save();mc.translate(70,70);
+  const s=62/110;
+  mc.fillStyle="#fbbf24";mc.beginPath();mc.arc(0,0,4,0,TAU);mc.fill();
+  items.forEach((it,i)=>{
+    mc.fillStyle=hx(it.c);mc.globalAlpha=i===act?1:vis.has(i)?.9:.5;
+    mc.beginPath();mc.arc(it.x*s,it.z*s,i===act?5:3.5,0,TAU);mc.fill();
+  });
+  mc.globalAlpha=1;mc.translate(P.x*s,P.z*s);mc.rotate(-P.h);
+  mc.fillStyle="#fff";mc.beginPath();mc.moveTo(0,7);mc.lineTo(-5,-5);mc.lineTo(5,-5);mc.fill();
+  mc.restore();
+}
+
+function loop(){
+  requestAnimationFrame(loop);
+  const now=performance.now(),dt=Math.min(.05,(now-lt)/1000),t=now/1000;lt=now;
+  const up=K.ArrowUp||K.KeyW,dn=K.ArrowDown||K.KeyS,lf=K.ArrowLeft||K.KeyA,rt=K.ArrowRight||K.KeyD,bo=K.ShiftLeft||K.ShiftRight;
+  if(up)P.v+=(bo?34:22)*dt;else if(dn)P.v-=(P.v>0?42:16)*dt;else P.v-=Math.sign(P.v)*Math.min(Math.abs(P.v),9*dt);
+  P.v=Math.max(-12,Math.min(bo?50:32,P.v));
+  const sr=((lf?1:0)-(rt?1:0))*Math.min(1,Math.abs(P.v)/7)*(P.v<0?-1:1);
+  st+=(sr-st)*Math.min(1,dt*8);P.h+=st*1.9*dt;
+  P.x+=Math.sin(P.h)*P.v*dt;P.z+=Math.cos(P.h)*P.v*dt;
+
+  items.forEach(it=>{
+    const dx=P.x-it.x,dz=P.z-it.z,d=Math.hypot(dx,dz)||1;
+    if(d<2.2){P.x=it.x+dx/d*2.2;P.z=it.z+dz/d*2.2;P.v*=.5}
+  });
+  {
+    const d=Math.hypot(P.x,P.z)||1;
+    if(d<4.0){P.x*=4.0/d;P.z*=4.0/d;P.v*=.5}
+    if(d>105){P.x*=105/d;P.z*=105/d;P.v*=.6}
+  }
+
+  car.position.set(P.x,0,P.z);car.rotation.y=P.h-Math.PI/2;
+  body.rotation.x=st*.06*Math.min(1,Math.abs(P.v)/20);
+  body.rotation.z=-Math.max(-.05,Math.min(.05,(P.v-pvv)/dt*.002));
+  pvv=P.v;body.position.y=Math.sin(t*3)*.012;
+  wh.forEach(w=>{w.pv.rotation.z-=P.v*dt/.42;if(w.f)w.st.rotation.y=st*.5});
+  ug.material.opacity=.4+.1*Math.sin(t*4)+(bo&&P.v>20?.2:0);
+
+  let ni=-1,nd=1e9;
+  items.forEach((it,i)=>{const d=Math.hypot(P.x-it.x,P.z-it.z);if(d<nd){nd=d;ni=i}});
+  const dp=Math.hypot(P.x,P.z);
+  if(act<0&&(nd<7.8||dp<10.5)){
+    act=dp<10.5&&dp<nd?N:ni;sub=-1;
+    if(act<N){vis.add(ni);hud()}
+    show();
+  }else if(act>=0&&(act===N?dp>12.5:Math.hypot(P.x-items[act].x,P.z-items[act].z)>10.5)){
+    act=-1;sub=-1;show();
+  }
+
+  items.forEach((it,i)=>{
+    const on=i===act;
+    it.ic.rotation.y=t*.55;
+    it.ic.position.y=4.8+Math.sin(t*1.5+i)*.25;
+    it.s+=((on?1.22:1)-it.s)*.1;
+    it.ic.scale.setScalar(it.s);
+    it.rg.scale.setScalar(on?1+.04*Math.sin(t*6):1);
+    vv.set(it.x,10.5,it.z).project(cam);
+    const s=it.l.style;
+    s.left=(vv.x*.5+.5)*innerWidth+"px";
+    s.top=(-vv.y*.5+.5)*innerHeight+"px";
+    s.opacity=vv.z>1?0:Math.max(0,Math.min(1,1.3-Math.hypot(P.x-it.x,P.z-it.z)/85));
+  });
+
+  vv.set(0,13.5,0).project(cam);
+  padL.style.left=(vv.x*.5+.5)*innerWidth+"px";
+  padL.style.top=(-vv.y*.5+.5)*innerHeight+"px";
+  padL.style.opacity=vv.z>1?0:Math.max(0,Math.min(1,1.3-Math.hypot(P.x,P.z)/85));
+
+  orb.rotation.y=t*.9;
+  orb.children.forEach((o,k)=>o.scale.setScalar(act===PB?(k===sub?2.2:1.4):1));
+  coin.rotation.y=t*.8;
+  halos[0].rotation.set(t*.5,0,.4);
+  halos[1].rotation.set(0,t*.6,-.5);
+
+  fw.set(Math.sin(P.h),0,Math.cos(P.h));
+  const back=9+P.v*.08;
+  tp.set(P.x-fw.x*back,3.8+P.v*.03,P.z-fw.z*back);
+  cam.position.lerp(tp,1-Math.pow(.002,dt));
+  cam.lookAt(P.x+fw.x*5,1.2,P.z+fw.z*5);
+  cam.fov+=((bo&&P.v>20?76:60)-cam.fov)*.05;
+  cam.updateProjectionMatrix();
+
+  dl.position.set(P.x+12,24,P.z+10);
+  dl.target.position.set(P.x,0,P.z);
+  $("spd").textContent=Math.round(Math.abs(P.v)*3.6);
+  drawMap();
+  rd.render(sc,cam);
+}
+loop();
+</script>
+</body>
+</html>
